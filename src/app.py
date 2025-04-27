@@ -26,8 +26,8 @@ def main(page: ft.Page):
             settings_container.visible = True
         page.update()
 
-    def button_saved_device(e):
-        with open('storage\data\settings.json', 'r+') as f:
+    def button_saved_device():
+        with open(r'storage\data\settings.json', 'r+') as f:
             settings = json.load(f)
             settings['device'] = dropdown.value
             f.seek(0)
@@ -36,9 +36,9 @@ def main(page: ft.Page):
     
     
     # Fonction pour jouer un son
-    def play_sound(e):
-        selected_sound = e.control.text
-        print(f"Playing sound: {selected_sound}")
+    def play_sound(sound):
+        selected_sound = sound['src']
+        print(f"Playing sound: {sound['name']}")
         api.play_sound(selected_sound, dropdown.value)
 
     # Texte de sortie
@@ -77,14 +77,33 @@ def main(page: ft.Page):
 
     # Contenu de la page d'accueil
     home_container.controls = [
-        
         output_text,
         ft.Text("Liste des sons :"),
-        *[
-            ft.ElevatedButton(text=sound, on_click=play_sound)
-            for sound in sounds_list
-        ],
+        ft.Row(  # Utilisation de ft.Row pour aligner les boutons horizontalement
+            [
+                ft.Column(
+                    [
+                        ft.Image(
+                            src=sound['img'],  # Utilisation de sound['src'] pour le chemin de l'image
+                            width=40,
+                            height=40,
+                        ),
+                        ft.ElevatedButton(
+                            text=sound['name'], 
+                            on_click=lambda e, s=sound: play_sound(s),
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(0, 0, 0, 0),  # Corrected Padding usage
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+                for sound in sounds_list
+            ],
+            alignment=ft.MainAxisAlignment.START,  # Alignement horizontal
+        ),
     ]
+
 
     # Contenu de la page des paramètres
     settings_container.controls = [
@@ -106,7 +125,7 @@ def main(page: ft.Page):
             ]
         )
     )
-    settings = preloading.load_settings(dropdown)
+    preloading.load_settings(dropdown)
 
 
 

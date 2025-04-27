@@ -17,3 +17,5 @@ def load_settings(dropdown):
     except FileNotFoundError:
         print("Settings file not found. Using default settings.")
         return {"device": "default_device"}
+
+

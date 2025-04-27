@@ -1,7 +1,7 @@
 import sounddevice as sd
 import soundfile as sf
 from os import listdir
-
+import json
 def get_output_devices():
     """
     Retourne une liste des noms de périphériques audio de sortie disponibles.
@@ -9,18 +9,18 @@ def get_output_devices():
     devices = sd.query_devices()
     output_devices = [d['name'] for d in devices if d['max_output_channels'] > 0]
     return output_devices
-
-def list_sounds(directory="./sounds"):
+    
+def list_sounds():
     """
     Retourne une liste des fichiers .wav dans le dossier des sons.
     """
     try:
-        files = listdir(directory)
-        sounds = [f for f in files if f.endswith(".mp3")]
-        return sounds
+        with open("storage\data\sounds.json", "r") as f:
+            sounds = json.load(f)
+            return sounds
     except FileNotFoundError:
-        print(f"Dossier '{directory}' non trouvé.")
-        return []
+        print("Sounds file not found. Using default sounds.")
+        return ["sound1.mp3", "sound2.mp3"]
 
 def play_sound(sound, selected_device):
     # Utiliser directement le nom du périphérique sélectionné
@@ -28,7 +28,7 @@ def play_sound(sound, selected_device):
     device_info = next((d for d in sd.query_devices() if d['name'] == device_name), None)
     if device_info:
         try:
-            file_path = f"./sounds/{sound}"
+            file_path = f"./{sound}"
             data, samplerate = sf.read(file_path)
             sd.play(data, samplerate=samplerate, device=device_info['name'])
         except Exception as e:
