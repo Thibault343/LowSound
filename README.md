@@ -1,4 +1,16 @@
-# Lowsound app
+# LowSound
+## What is it ?
+LowSound is a simple soundboard you can use to play some sound in ur microphone. 
+
+## What can we use ?
+For create this app we use Python for main programming language.
+
+Some libraries :
+- sounddevice
+- soudfile
+
+One external app:
+- Virtual Audio Cable app
 
 ## Run the app
 
