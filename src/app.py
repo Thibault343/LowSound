@@ -64,9 +64,9 @@ def main(page: ft.Page):
             ),
             ft.GestureDetector(
                 content=ft.Image(
-                    src="../assets/icon.png",  # Image pour "Paramètres"
-                    width=50,
-                    height=50,
+                    src="../assets/settings.png",  # Image pour "Paramètres"
+                    width=30,
+                    height=30,
                 ),
                 data="Paramètres",  # Identifiant pour l'image
                 on_tap=image_clicked,
@@ -78,7 +78,14 @@ def main(page: ft.Page):
     # Contenu de la page d'accueil
     home_container.controls = [
         output_text,
-        ft.Text("Liste des sons :"),
+        ft.Text(
+            "Sounds",
+            style=ft.TextStyle(
+                size=24,
+                weight=ft.FontWeight.BOLD,
+                color='blue',
+            ),
+        ),
         ft.Row(  # Utilisation de ft.Row pour aligner les boutons horizontalement
             [
                 ft.Column(
@@ -87,6 +94,7 @@ def main(page: ft.Page):
                             src=sound['img'],  # Utilisation de sound['src'] pour le chemin de l'image
                             width=40,
                             height=40,
+                            fit=ft.ImageFit.COVER,
                         ),
                         ft.ElevatedButton(
                             text=sound['name'], 
@@ -96,11 +104,12 @@ def main(page: ft.Page):
                             ),
                         ),
                     ],
-                    alignment=ft.MainAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.CENTER,  # Centrer les images et boutons verticalement
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centrer horizontalement
                 )
                 for sound in sounds_list
             ],
-            alignment=ft.MainAxisAlignment.START,  # Alignement horizontal
+            alignment=ft.MainAxisAlignment.CENTER,  # Centrer les colonnes horizontalement dans la rangée
         ),
     ]
 
