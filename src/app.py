@@ -56,7 +56,10 @@ def main(page: ft.Page):
         if e.files and len(e.files) > 0:
             if e.files[0].path.lower().endswith(('.mp3', '.wav')):
                 # Convertir le chemin absolu en chemin relatif
-                selected_song_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
+                if os.path.splitdrive(e.files[0].path)[0] == os.path.splitdrive(os.getcwd())[0]:
+                    selected_song_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
+                else:
+                    selected_song_file.value = e.files[0].path
             else:
                 # Convertir le chemin absolu en chemin relatif pour l'image
                 selected_image_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())

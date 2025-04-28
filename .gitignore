@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 # Flet
-storage/data/sounds.json
+storage/data/sounds/sadasdasd.mp3
 storage/data/temp
