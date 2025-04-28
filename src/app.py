@@ -177,14 +177,13 @@ def main(page: ft.Page):
                     [
                         ft.ElevatedButton(
                             text="Ajouter",
-                            icon=ft.icons.ADD,
                             on_click=button_add_sound_clicked,
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
                             ),
                         ),
                         ft.ElevatedButton(
-                            icon=ft.icons.REFRESH,
+                            
                             text="Refresh",
                             on_click=refresh_sounds_list,  # Appel correct de la fonction
                             style=ft.ButtonStyle(
@@ -266,7 +265,6 @@ def main(page: ft.Page):
         ft.Text("Sélectionner votre son :"),
         ft.ElevatedButton(
             "Sélectionner un fichier",
-            icon=ft.Icons.UPLOAD_FILE,
             on_click=lambda _: pick_files_dialog.pick_files(
                 allow_multiple=False,  # Limite la sélection à un seul fichier
                 allowed_extensions=["mp3"]  # Autorise uniquement les fichiers audio
@@ -276,7 +274,6 @@ def main(page: ft.Page):
         ft.Text("Ajouter une image (facultatif) :"),  # Texte explicatif
         ft.ElevatedButton(
             "Sélectionner une image",
-            icon=ft.Icons.UPLOAD_FILE,
             on_click=lambda _: pick_files_dialog.pick_files(
                 allow_multiple=False,  # Limite la sélection à un seul fichier
                 allowed_extensions=["jpg", "jpeg", "png"]  # Autorise uniquement les fichiers image

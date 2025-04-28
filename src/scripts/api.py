@@ -74,8 +74,6 @@ def createNewSong(songName, songPath, imagePath):
         with open("storage/data/sounds.json", "w") as file:
             json.dump(sounds, file, indent=4)
         
-        print(f"Ajout de la chanson : {songName} avec le chemin : {songPath}")
-        
             
 
 
