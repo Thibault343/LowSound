@@ -1,6 +1,7 @@
 import sounddevice as sd
 import soundfile as sf
 from os import listdir
+import shutil
 import json
 def get_output_devices():
     """
@@ -48,6 +49,44 @@ def main():
             print(f"{i + 1}. {dev}")
     
     return output_devices
+
+
+
+def createNewSong(songName, songPath, imagePath):
+    if imagePath == "Aucune image sélectionné":
+        imagePath = ""
+    if songName.strip() != "":
+        new_song = {"name": songName}
+        
+        if songPath.strip() != "":
+            shutil.copy(songPath, "../sounds")
+            new_song["src"] = songPath
+            
+            if imagePath.strip() == "":
+                # Load default image
+                new_song["img"] = "../assets/icon2.png"
+            else:
+                new_song["img"] = imagePath
+        
+        try:
+            # Load existing data
+            with open("storage\\data\\sounds.json", "r") as file:
+                sounds = json.load(file)
+        except FileNotFoundError:
+            # If file doesn't exist, start with an empty list
+            sounds = []
+        
+        # Append the new song to the list
+        sounds.append(new_song)
+        
+        # Save the updated list back to the file
+        with open("storage\\data\\sounds.json", "w") as file:
+            json.dump(sounds, file, indent=4)
+
+
+    
+
+                
 
 if __name__ == "__main__":
     main()
