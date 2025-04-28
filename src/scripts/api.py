@@ -50,17 +50,18 @@ def main():
     
     return output_devices
 
-
-
+import os
+from pathlib import Path
 def createNewSong(songName, songPath, imagePath):
     if imagePath == "Aucune image sélectionné":
         imagePath = ""
     if songName.strip() != "":
         new_song = {"name": songName}
-        
         if songPath.strip() != "":
-            shutil.copy(songPath, "../sounds")
-            new_song["src"] = songPath
+            destination_path = Path(__file__).parent.parent / "sounds"
+            destination_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
+            copied_file_path = shutil.copy(Path(songPath), destination_path)
+            new_song["src"] = str(Path(copied_file_path).relative_to(Path(__file__).parent.parent))
             
             if imagePath.strip() == "":
                 # Load default image
