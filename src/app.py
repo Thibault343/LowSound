@@ -84,12 +84,47 @@ def main(page: ft.Page):
             statuscreate.color = "red"
             statuscreate.update()
             return
-
         # Si tout est valide, appelez la fonction pour ajouter le son
         api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
         statuscreate.value = "Son ajouté avec succès !"
         statuscreate.color = "green"
         statuscreate.update()
+        
+    def refresh_sounds_list(_):
+        global sounds_list
+        with open("storage/data/sounds.json", "r") as file:
+            sounds_list = json.load(file)
+        sounds_list = [sound for sound in sounds_list if sound['src'] != ""]  # Filtrer les sons sans chemin valide
+
+        # Mettre à jour les boutons pour jouer les sons
+        home_container.controls[2] = ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Image(
+                            src=sound['img'],
+                            width=40,
+                            height=40,
+                            fit=ft.ImageFit.COVER,
+                        ),
+                        ft.ElevatedButton(
+                            text=sound['name'], 
+                            on_click=lambda _, s=sound: play_sound(s),
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(0, 0, 0, 0),
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                )
+                for sound in sounds_list
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        page.update()
+
+        
 
     # Texte de sortie
     output_text = ft.Text()
@@ -138,12 +173,26 @@ def main(page: ft.Page):
                         color='blue',
                     ),
                 ),
-                ft.ElevatedButton(
-                    text="Ajouter",
-                    on_click=button_add_sound_clicked,
-                    style=ft.ButtonStyle(
-                        padding=ft.Padding(10, 10, 10, 10),
-                    ),
+                ft.Row(
+                    [
+                        ft.ElevatedButton(
+                            text="Ajouter",
+                            icon=ft.icons.ADD,
+                            on_click=button_add_sound_clicked,
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                        ft.ElevatedButton(
+                            icon=ft.icons.REFRESH,
+                            text="Refresh",
+                            on_click=refresh_sounds_list,  # Appel correct de la fonction
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
                 ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
