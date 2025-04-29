@@ -1,93 +1,11 @@
-# LowSound
-## What is it ?
-LowSound is a simple soundboard you can use to play some sound in ur microphone. 
+## License
 
-## What can we use ?
-For create this app we use Python for main programming language.
+This project is licensed under the [MIT License](LICENSE).
 
-Some libraries :
-- sounddevice
-- soudfile
+It also uses the following third-party libraries:
 
-One external app:
-- Virtual Audio Cable app
+-   [SoundFile](https://github.com/bastibe/python-soundfile) – BSD 3-Clause License
+-   [sounddevice](https://github.com/spatialaudio/python-sounddevice) – MIT License
+-   [Flet](https://github.com/flet-dev/flet) – Apache License 2.0
 
-## Run the app
-
-### uv
-
-Run as a desktop app:
-
-```
-uv run flet run
-```
-
-Run as a web app:
-
-```
-uv run flet run --web
-```
-
-### Poetry
-
-Install dependencies from `pyproject.toml`:
-
-```
-poetry install
-```
-
-Run as a desktop app:
-
-```
-poetry run flet run
-```
-
-Run as a web app:
-
-```
-poetry run flet run --web
-```
-
-For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/getting-started/).
-
-## Build the app
-
-### Android
-
-```
-flet build apk -v
-```
-
-For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
-
-### iOS
-
-```
-flet build ipa -v
-```
-
-For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
-
-### macOS
-
-```
-flet build macos -v
-```
-
-For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
-
-### Linux
-
-```
-flet build linux -v
-```
-
-For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
-
-### Windows
-
-```
-flet build windows -v
-```
-
-For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).
+Please refer to the `THIRD_PARTY_LICENSES.md` file for full license texts.
