@@ -19,7 +19,7 @@ One external app:
 - Flet version : 0.27.6
 - Sounddevice version : 0.5.1
 - Soundfile versions : 0.13.1
-- VB CABLE
+- [VB CABLE](https://vb-audio.com/Cable/)
 
 ### Installing packages
 ```python
