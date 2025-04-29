@@ -25,6 +25,15 @@ One external app:
 ```python
 pip install "flet==0.27.6" "sounddevice==0.5.1" "soundfile==0.13.1"
 ```
+### Install VB CABLE
+Go to [Download](https://vb-audio.com/Cable/)
+
+### Setup VB Cable
+1. Open your sounds settings
+2. Go to Playback and select you headphone as default
+3. Go to Recording and select your microphone as default
+4. Go to Recording -> your microphone -> proprieties -> Listen to this device ✅
+5. Select the output audio cable as a playback
 
 ### Start the app.js
 ```bash
