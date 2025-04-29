@@ -1,4 +1,4 @@
-# SoundFile (BSD 3-Clause)
+## SoundFile (BSD 3-Clause)
 
 Copyright (c) 2013, Bastian Bechtold
 All rights reserved.
