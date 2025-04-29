@@ -1,12 +1,21 @@
-## License
+# LowSound
 
-This project is licensed under the [MIT License](LICENSE).
+## What is it ?
 
-It also uses the following third-party libraries:
+LowSound is a simple soundboard you can use to play some sound in ur microphone.
 
--   [SoundFile](https://github.com/bastibe/python-soundfile) – BSD 3-Clause License
--   [sounddevice](https://github.com/spatialaudio/python-sounddevice) – MIT License
--   [Flet](https://github.com/flet-dev/flet) – Apache License 2.0
+## What can we use ?
+
+For create this app we use Python for main programming language.
+
+Some libraries :
+
+-   sounddevice
+-   soudfile
+
+One external app:
+
+-   Virtual Audio Cable app
 
 ## Run the app
 
