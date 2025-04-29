@@ -53,36 +53,29 @@ def main():
 import os
 from pathlib import Path
 def createNewSong(songName, songPath, imagePath):
-    if imagePath == "Aucune image sélectionné":
-        imagePath = ""
-    if songName.strip() != "":
-        new_song = {"name": songName}
-        if songPath.strip() != "":
-            destination_path = Path(__file__).parent.parent / "sounds"
-            destination_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
-            copied_file_path = shutil.copy(Path(songPath), destination_path)
-            new_song["src"] = str(Path(copied_file_path).relative_to(Path(__file__).parent.parent))
-            
-            if imagePath.strip() == "":
-                # Load default image
-                new_song["img"] = "../assets/icon2.png"
-            else:
-                new_song["img"] = imagePath
-        
+    if imagePath == "Aucune image sélectionné": # Si l'image n'est pas spécifiée, on utilise une image par défaut
+        imagePath = "../assets/icon2.png"
+    
+    if songName.replace(" ", "") != "":
+        shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")  # Copie le fichier audio dans le dossier de stockage
+        songPath = f"storage/data/sounds/{songName}.mp3"  # Met à jour le chemin du fichier audio
+        new_song = {
+            "name": songName,
+            "src": songPath if songPath.replace(" ", "") != "" else "",
+            "img": imagePath if imagePath.replace(" ", "") != "" else "../assets/icon2.png"
+        }
         try:
-            # Load existing data
-            with open("storage\\data\\sounds.json", "r") as file:
+            with open("storage/data/sounds.json", "r") as file:
                 sounds = json.load(file)
         except FileNotFoundError:
-            # If file doesn't exist, start with an empty list
-            sounds = []
+            sounds = []  # Initialize an empty list if the file doesn't exist
         
-        # Append the new song to the list
         sounds.append(new_song)
-        
-        # Save the updated list back to the file
-        with open("storage\\data\\sounds.json", "w") as file:
+        with open("storage/data/sounds.json", "w") as file:
             json.dump(sounds, file, indent=4)
+        
+            
+
 
 
     

@@ -56,7 +56,10 @@ def main(page: ft.Page):
         if e.files and len(e.files) > 0:
             if e.files[0].path.lower().endswith(('.mp3', '.wav')):
                 # Convertir le chemin absolu en chemin relatif
-                selected_song_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
+                if os.path.splitdrive(e.files[0].path)[0] == os.path.splitdrive(os.getcwd())[0]:
+                    selected_song_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
+                else:
+                    selected_song_file.value = e.files[0].path
             else:
                 # Convertir le chemin absolu en chemin relatif pour l'image
                 selected_image_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
@@ -81,12 +84,47 @@ def main(page: ft.Page):
             statuscreate.color = "red"
             statuscreate.update()
             return
-
         # Si tout est valide, appelez la fonction pour ajouter le son
         api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
         statuscreate.value = "Son ajouté avec succès !"
         statuscreate.color = "green"
         statuscreate.update()
+        
+    def refresh_sounds_list(_):
+        global sounds_list
+        with open("storage/data/sounds.json", "r") as file:
+            sounds_list = json.load(file)
+        sounds_list = [sound for sound in sounds_list if sound['src'] != ""]  # Filtrer les sons sans chemin valide
+
+        # Mettre à jour les boutons pour jouer les sons
+        home_container.controls[2] = ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Image(
+                            src=sound['img'],
+                            width=40,
+                            height=40,
+                            fit=ft.ImageFit.COVER,
+                        ),
+                        ft.ElevatedButton(
+                            text=sound['name'], 
+                            on_click=lambda _, s=sound: play_sound(s),
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(0, 0, 0, 0),
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                )
+                for sound in sounds_list
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        page.update()
+
+        
 
     # Texte de sortie
     output_text = ft.Text()
@@ -135,12 +173,25 @@ def main(page: ft.Page):
                         color='blue',
                     ),
                 ),
-                ft.ElevatedButton(
-                    text="Ajouter",
-                    on_click=button_add_sound_clicked,
-                    style=ft.ButtonStyle(
-                        padding=ft.Padding(10, 10, 10, 10),
-                    ),
+                ft.Row(
+                    [
+                        ft.ElevatedButton(
+                            text="Ajouter",
+                            on_click=button_add_sound_clicked,
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                        ft.ElevatedButton(
+                            
+                            text="Refresh",
+                            on_click=refresh_sounds_list,  # Appel correct de la fonction
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
                 ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -214,7 +265,6 @@ def main(page: ft.Page):
         ft.Text("Sélectionner votre son :"),
         ft.ElevatedButton(
             "Sélectionner un fichier",
-            icon=ft.Icons.UPLOAD_FILE,
             on_click=lambda _: pick_files_dialog.pick_files(
                 allow_multiple=False,  # Limite la sélection à un seul fichier
                 allowed_extensions=["mp3"]  # Autorise uniquement les fichiers audio
@@ -224,7 +274,6 @@ def main(page: ft.Page):
         ft.Text("Ajouter une image (facultatif) :"),  # Texte explicatif
         ft.ElevatedButton(
             "Sélectionner une image",
-            icon=ft.Icons.UPLOAD_FILE,
             on_click=lambda _: pick_files_dialog.pick_files(
                 allow_multiple=False,  # Limite la sélection à un seul fichier
                 allowed_extensions=["jpg", "jpeg", "png"]  # Autorise uniquement les fichiers image
