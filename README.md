@@ -15,10 +15,10 @@ One external app:
 ## Run the app
 
 ### Requirements
-- Python version : 3.13
-- Flet version : 0.27.6
-- Sounddevice version : 0.5.1
-- Soundfile versions : 0.13.1
+- [Python](https://www.python.org/downloads/) version : 3.13
+- [Flet](https://flet.dev/) version : 0.27.6
+- [Sounddevice](https://pypi.org/project/sounddevice/) version : 0.5.1
+- [Soundfile](https://pypi.org/project/soundfile/) versions : 0.13.1
 - [VB CABLE](https://vb-audio.com/Cable/)
 
 ### Installing packages
