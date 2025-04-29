@@ -51,7 +51,7 @@ Go to [Download](https://vb-audio.com/Cable/)
 ./app.js
 ```
 
-## License
+## Licenses
 
 This project is licensed under the [MIT License](LICENSE).
 
