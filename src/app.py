@@ -7,7 +7,7 @@ import os
 # init
 devices_list = api.get_output_devices()
 sounds_list = api.list_sounds()
-
+max_sounds_per_row = 7
 
 def main(page: ft.Page):
     page.theme_mode = "dark"
@@ -159,7 +159,7 @@ def main(page: ft.Page):
         ],
         alignment=ft.MainAxisAlignment.START,
     )
-
+    
     # Contenu de la page d'accueil
     home_container.controls = [
         output_text,
@@ -183,9 +183,8 @@ def main(page: ft.Page):
                             ),
                         ),
                         ft.ElevatedButton(
-                            
                             text="Refresh",
-                            on_click=refresh_sounds_list,  # Appel correct de la fonction
+                            on_click=refresh_sounds_list,
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
                             ),
@@ -197,30 +196,35 @@ def main(page: ft.Page):
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
         ),
-        ft.Row(
+        ft.Column(
             [
-                ft.Column(
+                ft.Row(
                     [
-                        ft.Image(
-                            src=sound['img'],
-                            width=40,
-                            height=40,
-                            fit=ft.ImageFit.COVER,
-                        ),
-                        ft.ElevatedButton(
-                            text=sound['name'], 
-                            on_click=lambda _, s=sound: play_sound(s),
-                            style=ft.ButtonStyle(
-                                padding=ft.Padding(0, 0, 0, 0),
-                            ),
-                        ),
+                        ft.Column(
+                            [
+                                ft.Image(
+                                    src=sound['img'],
+                                    width=40,
+                                    height=40,
+                                    fit=ft.ImageFit.COVER,
+                                ),
+                                ft.ElevatedButton(
+                                    text=sound['name'],
+                                    on_click=lambda _, s=sound: play_sound(s),
+                                    style=ft.ButtonStyle(
+                                        padding=ft.Padding(0, 0, 0, 0),
+                                    ),
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        )
+                        for sound in sounds_list[row_start:row_start + max_sounds_per_row]
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 )
-                for sound in sounds_list
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
+                for row_start in range(0, len(sounds_list), max_sounds_per_row)
+            ]
         ),
     ]
 
