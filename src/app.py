@@ -142,8 +142,18 @@ def main(page: ft.Page):
 
     # Setup delete function
     delete_mode = False
-    def delete_songs(_) :
-        
+    def delete_songs(e):
+        with open("storage/data/sounds.json", 'r') as f:
+            data = json.load(f)
+        print(e['name'])
+
+        # Supprimer la chanson correspondante
+        data = [song for song in data if song['name'] != e['name']]
+
+        # Écrire les données mises à jour dans le fichier
+        with open("storage/data/sounds.json", 'w') as f:
+            json.dump(data, f, indent=4)
+
         page.update()
 
     def toggle_delete_mode(e):
