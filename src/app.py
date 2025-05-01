@@ -15,28 +15,32 @@ def main(page: ft.Page):
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
     add_song_container = ft.Column(visible=False)
+    delete_song_container = ft.Column(visible=False)
 
-    # Fonction pour gérer la sélection des images
-    def image_clicked(e):
+    # Fonction pour gérer la sélection des pages
+    def change_Page(e):
         if e.control.data == "Accueil":
             home_container.visible = True
             settings_container.visible = False
             add_song_container.visible = False
+            delete_song_container.visible = False
         elif e.control.data == "Paramètres":
             home_container.visible = False
             settings_container.visible = True
             add_song_container.visible = False
+            delete_song_container.visible = False
         elif e.control.data == "Ajouter":
             home_container.visible = False
             settings_container.visible = False
             add_song_container.visible = True
+            delete_song_container.visible = False
+        elif e.control.data == "Supprimer" :
+            home_container.visible = False
+            settings_container.visible = False
+            add_song_container.visible = False
+            delete_song_container.visible = True
         page.update()
-    def button_add_sound_clicked(_):
-        add_song_container.visible = True
-        home_container.visible = False
-        settings_container.visible = False
-        page.update()
-
+    # Function for save the default device
     def button_saved_device(_):
         with open(r'storage\data\settings.json', 'r+') as f:
             settings = json.load(f)
@@ -50,7 +54,7 @@ def main(page: ft.Page):
         selected_sound = sound['src']
         print(f"Playing sound: {sound['name']}")
         api.play_sound(selected_sound, dropdown.value)
-
+    # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
         # Vérifiez si un fichier a été sélectionné
         if e.files and len(e.files) > 0:
@@ -72,7 +76,7 @@ def main(page: ft.Page):
     pick_files_dialog = ft.FilePicker(
         on_result=pick_files_result
     )
-
+    # function if a song is available to be create
     def validate_and_add_song(_):
         if not sound_name_input.value.strip():
             statuscreate.value = "Le nom du son est obligatoire."
@@ -89,114 +93,15 @@ def main(page: ft.Page):
         statuscreate.value = "Son ajouté avec succès !"
         statuscreate.color = "green"
         statuscreate.update()
-        
+    # function to refresh the songs list
     def refresh_sounds_list(_):
         global sounds_list
         with open("storage/data/sounds.json", "r") as file:
             sounds_list = json.load(file)
         sounds_list = [sound for sound in sounds_list if sound['src'] != ""]  # Filtrer les sons sans chemin valide
 
-        # Mettre à jour les boutons pour jouer les sons
-        home_container.controls[2] = ft.Row(
-            [
-                ft.Column(
-                    [
-                        ft.Image(
-                            src=sound['img'],
-                            width=40,
-                            height=40,
-                            fit=ft.ImageFit.COVER,
-                        ),
-                        ft.ElevatedButton(
-                            text=sound['name'], 
-                            on_click=lambda _, s=sound: play_sound(s),
-                            style=ft.ButtonStyle(
-                                padding=ft.Padding(0, 0, 0, 0),
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                )
-                for sound in sounds_list
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-        page.update()
-
-        
-
-    # Texte de sortie
-    output_text = ft.Text()
-
-    # Dropdown pour les périphériques
-    dropdown = ft.Dropdown(
-        options=[ft.dropdown.Option(device) for device in devices_list],
-        autofocus=True,
-    )
-
-    # Images dans le menu
-    top_images = ft.Row(
-        [
-            ft.GestureDetector(
-                content=ft.Image(
-                    src="../assets/icon.png",  # Image pour "Accueil"
-                    width=50,
-                    height=50,
-                ),
-                data="Accueil",  # Identifiant pour l'image
-                on_tap=image_clicked,
-            ),
-            ft.GestureDetector(
-                content=ft.Image(
-                    src="../assets/settings.png",  # Image pour "Paramètres"
-                    width=30,
-                    height=30,
-                ),
-                data="Paramètres",  # Identifiant pour l'image
-                on_tap=image_clicked,
-            ),
-        ],
-        alignment=ft.MainAxisAlignment.START,
-    )
-    
-    # Contenu de la page d'accueil
-    home_container.controls = [
-        output_text,
-        ft.Row(
-            [
-                ft.Text(
-                    "Sounds",
-                    style=ft.TextStyle(
-                        size=24,
-                        weight=ft.FontWeight.BOLD,
-                        color='blue',
-                    ),
-                ),
-                ft.Row(
-                    [
-                        ft.ElevatedButton(
-                            text="Ajouter",
-                            on_click=button_add_sound_clicked,
-                            style=ft.ButtonStyle(
-                                padding=ft.Padding(10, 10, 10, 10),
-                            ),
-                        ),
-                        ft.ElevatedButton(
-                            text="Refresh",
-                            on_click=refresh_sounds_list,
-                            style=ft.ButtonStyle(
-                                padding=ft.Padding(10, 10, 10, 10),
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.END,
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER,
-        ),
-        ft.Column(
+        # Mettre à jour la liste des sons
+        home_container.controls[1] = ft.Column(
             [
                 ft.Row(
                     [
@@ -215,6 +120,151 @@ def main(page: ft.Page):
                                         padding=ft.Padding(0, 0, 0, 0),
                                     ),
                                 ),
+                                # Bouton corbeille visible uniquement en mode suppression
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE,
+                                    icon_color=ft.Colors.RED,
+                                    on_click=lambda _, s=sound: delete_songs(s),
+                                    visible=delete_mode,  # Affiche uniquement si delete_mode est True
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        )
+                        for sound in sounds_list[row_start:row_start + max_sounds_per_row]
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+                for row_start in range(0, len(sounds_list), max_sounds_per_row)
+            ]
+        )
+        page.update()
+
+    # Setup delete function
+    delete_mode = False
+    def delete_songs(_) :
+        
+        page.update()
+
+    def toggle_delete_mode(e):
+        nonlocal delete_mode
+        delete_mode = not delete_mode  # Inverse l'état du mode suppression
+        if delete_mode:
+            e.control.style.bgcolor = 'red'
+            e.control.style.color = 'white'  # Change la couleur du texte en blanc
+        else:
+            e.control.style.bgcolor = None
+            e.control.style.color = None  # Réinitialise la couleur du texte
+        
+        page.update()
+        refresh_sounds_list(None)  # Met à jour la liste des sons
+
+    # Dropdown pour les périphériques
+    dropdown = ft.Dropdown(
+        options=[ft.dropdown.Option(device) for device in devices_list],
+        autofocus=True,
+    )
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Nav Bar
+    # ---------------------------------------------------------------------------------------------
+    navBar = ft.Row(
+        [
+            ft.GestureDetector(
+                content=ft.Image(
+                    src="../assets/icon.png",  # Image pour "Accueil"
+                    width=50,
+                    height=50,
+                ),
+                data="Accueil",  # Identifiant pour l'image
+                on_tap=change_Page,
+            ),
+            ft.GestureDetector(
+                content=ft.Image(
+                    src="../assets/settings.png",  # Image pour "Paramètres"
+                    width=30,
+                    height=30,
+                ),
+                data="Paramètres",  # Identifiant pour l'image
+                on_tap=change_Page,
+            ),
+        ],
+        alignment=ft.MainAxisAlignment.START,
+    )
+    
+    # ---------------------------------------------------------------------------------------------
+    #                           Home Page
+    # ---------------------------------------------------------------------------------------------
+    home_container.controls = [
+        ft.Row(
+            [
+                # Sounds Title
+                ft.Text(
+                    "Sounds",
+                    style=ft.TextStyle(
+                        size=24,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
+                # Buttons on right 
+                ft.Row(
+                    [
+                        ft.ElevatedButton(
+                            text="Ajouter",
+                            on_click=change_Page,
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                        ft.ElevatedButton(
+                            text="Refresh",
+                            on_click=refresh_sounds_list,
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                        ft.ElevatedButton(
+                            text="Supprimer",
+                            on_click=toggle_delete_mode,
+                            style=ft.ButtonStyle(
+                                padding=ft.Padding(10, 10, 10, 10),
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        # Generated boutons
+        ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Column(
+                            [
+                                ft.Image(
+                                    src=sound['img'],
+                                    width=40,
+                                    height=40,
+                                    fit=ft.ImageFit.COVER,
+                                ),
+                                ft.ElevatedButton(
+                                    text=sound['name'],
+                                    on_click=lambda _, s=sound: play_sound(s),
+                                    style=ft.ButtonStyle(
+                                        padding=ft.Padding(0, 0, 0, 0),
+                                    ),
+                                ),ft.IconButton(
+                                    icon=ft.Icons.DELETE,
+                                    icon_color=ft.Colors.PINK_700,
+                                    icon_size=20,
+                                    tooltip="Nope",
+                                    visible= delete_mode,
+                                    on_click=delete_songs
+                                ),
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -228,7 +278,9 @@ def main(page: ft.Page):
         ),
     ]
 
-    # Contenu de la page des paramètres
+    # ---------------------------------------------------------------------------------------------
+    #                           Settings Page
+    # ---------------------------------------------------------------------------------------------
     settings_container.controls = [
         ft.Text("Paramètres :"),
         ft.Text("Sélectionnez un périphérique audio :"),
@@ -260,6 +312,10 @@ def main(page: ft.Page):
     # Ajoutez le FilePicker au page.overlay
     page.overlay.append(pick_files_dialog)
 
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Add song Page
+    # ---------------------------------------------------------------------------------------------
     statuscreate = ft.Text("")
     # Contenu de la page Ajouter un son
     sound_name_input = ft.TextField(label="Nom du son")
@@ -288,16 +344,15 @@ def main(page: ft.Page):
         statuscreate
     ]
 
-    
-
     # Mise en page principale
     page.add(
         ft.Column(
             [
-                top_images,
+                navBar,
                 home_container,
                 settings_container,
                 add_song_container,
+                delete_song_container,
             ]
         )
     )
