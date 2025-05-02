@@ -15,7 +15,6 @@ def main(page: ft.Page):
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
     add_song_container = ft.Column(visible=False)
-    delete_song_container = ft.Column(visible=False)
 
     # Fonction pour gérer la sélection des pages
     def change_Page(e):
@@ -23,22 +22,14 @@ def main(page: ft.Page):
             home_container.visible = True
             settings_container.visible = False
             add_song_container.visible = False
-            delete_song_container.visible = False
         elif e.control.data == "Paramètres":
             home_container.visible = False
             settings_container.visible = True
             add_song_container.visible = False
-            delete_song_container.visible = False
         elif e.control.data == "Ajouter":
             home_container.visible = False
             settings_container.visible = False
             add_song_container.visible = True
-            delete_song_container.visible = False
-        elif e.control.data == "Supprimer" :
-            home_container.visible = False
-            settings_container.visible = False
-            add_song_container.visible = False
-            delete_song_container.visible = True
         page.update()
     # Function for save the default device
     def button_saved_device(_):
@@ -142,18 +133,16 @@ def main(page: ft.Page):
 
     # Setup delete function
     delete_mode = False
-    def delete_songs(e):
+    def delete_songs(e) :
         with open("storage/data/sounds.json", 'r') as f:
             data = json.load(f)
         print(e['name'])
 
-        # Supprimer la chanson correspondante
-        data = [song for song in data if song['name'] != e['name']]
-
-        # Écrire les données mises à jour dans le fichier
-        with open("storage/data/sounds.json", 'w') as f:
-            json.dump(data, f, indent=4)
-
+        # Supprimer l'utilisateur avec id = 2
+        for song in data:
+            if song['name'] == e['name']:
+                data.remove(song)
+        
         page.update()
 
     def toggle_delete_mode(e):
@@ -223,6 +212,7 @@ def main(page: ft.Page):
                         ft.ElevatedButton(
                             text="Ajouter",
                             on_click=change_Page,
+                            
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
                             ),
@@ -362,7 +352,6 @@ def main(page: ft.Page):
                 home_container,
                 settings_container,
                 add_song_container,
-                delete_song_container,
             ]
         )
     )
