@@ -76,12 +76,29 @@ def main():
 
 
 def createNewSong(songName, songPath, imagePath):
+    print()  # Affiche les trois derniers caractères du chemin du fichier
     if imagePath == "Aucune image sélectionné": # Si l'image n'est pas spécifiée, on utilise une image par défaut
         imagePath = "../assets/icon2.png"
     
     if songName.replace(" ", "") != "":
-        shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")  # Copie le fichier audio dans le dossier de stockage
-        songPath = f"storage/data/sounds/{songName}.mp3"  # Met à jour le chemin du fichier audio
+        songType = songPath[-3:]
+        if songType == "mp3":
+            shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")  # Copie le fichier audio dans le dossier de stockage
+        else:
+            shutil.copy2(songPath, f"storage/data/sounds/{songName}.wav")  # Copie le fichier audio dans le dossier de stockage
+        songPath = f"storage/data/sounds/{songName}.{songType}"  # Met à jour le chemin du fichier audio
+        
+        if imagePath[-3:] == "png":
+            shutil.copy2(imagePath, f"storage/data/images/{songName}.png")  # Copie le fichier image dans le dossier de stockage
+            imagePath = f"storage/data/images/{songName}.png"
+        elif imagePath[-3:] == "jgp":
+            shutil.copy2(imagePath, f"storage/data/images/{songName}.jpg")  # Copie le image image dans le dossier de stockage
+            imagePath = f"storage/data/images/{songName}.jpg"
+        else :
+            shutil.copy2(imagePath, f"storage/data/images/{songName}.jpeg")  # Copie le image image dans le dossier de stockage
+            imagePath = f"storage/data/images/{songName}.jpeg"
+
+        
         new_song = {
             "name": songName,
             "src": songPath if songPath.replace(" ", "") != "" else "",
@@ -97,13 +114,6 @@ def createNewSong(songName, songPath, imagePath):
         with open("storage/data/sounds.json", "w") as file:
             json.dump(sounds, file, indent=4)
         
-            
-
-
-
-    
-
-                
 
 if __name__ == "__main__":
     main()

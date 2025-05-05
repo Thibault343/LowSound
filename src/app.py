@@ -24,6 +24,7 @@ def main(page: ft.Page):
             home_container.visible = True
             settings_container.visible = False
             add_song_container.visible = False
+            refresh_sounds_list(None)  # Met à jour la liste des sons
         elif e.control.data == "Paramètres":
             home_container.visible = False
             settings_container.visible = True
