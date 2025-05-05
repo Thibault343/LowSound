@@ -1,5 +1,7 @@
 import flet as ft
 from scripts import api
+from scripts.api import delete_song_from_json
+from scripts.api import saved_settings
 from scripts import front_preloading as preloading
 import json
 import os
@@ -26,19 +28,11 @@ def main(page: ft.Page):
             home_container.visible = False
             settings_container.visible = True
             add_song_container.visible = False
-        elif e.control.data == "Ajouter":
+        elif e.control.text == "Ajouter":
             home_container.visible = False
             settings_container.visible = False
             add_song_container.visible = True
         page.update()
-    # Function for save the default device
-    def button_saved_device(_):
-        with open(r'storage\data\settings.json', 'r+') as f:
-            settings = json.load(f)
-            settings['device'] = dropdown.value
-            f.seek(0)
-            json.dump(settings, f, indent=4)
-            f.truncate()
 
     # Fonction pour jouer un son
     def play_sound(sound):
@@ -134,17 +128,9 @@ def main(page: ft.Page):
     # Setup delete function
     delete_mode = False
     def delete_songs(e) :
-        with open("storage/data/sounds.json", 'r') as f:
-            data = json.load(f)
-        print(e['name'])
-
-        # Supprimer l'utilisateur avec id = 2
-        for song in data:
-            if song['name'] == e['name']:
-                data.remove(song)
-        
+        delete_song_from_json(e)
         page.update()
-
+    
     def toggle_delete_mode(e):
         nonlocal delete_mode
         delete_mode = not delete_mode  # Inverse l'état du mode suppression
@@ -154,7 +140,7 @@ def main(page: ft.Page):
         else:
             e.control.style.bgcolor = None
             e.control.style.color = None  # Réinitialise la couleur du texte
-        
+
         page.update()
         refresh_sounds_list(None)  # Met à jour la liste des sons
 
@@ -212,7 +198,6 @@ def main(page: ft.Page):
                         ft.ElevatedButton(
                             text="Ajouter",
                             on_click=change_Page,
-                            
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
                             ),
@@ -284,8 +269,8 @@ def main(page: ft.Page):
     settings_container.controls = [
         ft.Text("Paramètres :"),
         ft.Text("Sélectionnez un périphérique audio :"),
-        dropdown,
-        ft.ElevatedButton(text="Save", on_click=button_saved_device),
+dropdown,
+ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
         ft.Switch(label="Activer une option"),
         ft.Slider(label="Volume", min=0, max=100, value=50),
     ]

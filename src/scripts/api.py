@@ -23,6 +23,24 @@ def list_sounds():
         print("Sounds file not found. Using default sounds.")
         return ["sound1.mp3", "sound2.mp3"]
 
+def saved_settings(dd):
+    with open(r'storage\data\settings.json', 'r+') as f:
+        settings = json.load(f)
+        settings['device'] = dd.value
+        f.seek(0)
+        json.dump(settings, f, indent=4)
+        f.truncate()
+
+def delete_song_from_json(e):
+    with open("storage/data/sounds.json", 'r') as f:
+            data = json.load(f)
+    print(e['name'])
+
+    # Supprimer l'utilisateur avec id = 2
+    for song in data:
+        if song['name'] == e['name']:
+            data.remove(song)
+
 def play_sound(sound, selected_device):
     # Utiliser directement le nom du périphérique sélectionné
     device_name = selected_device  # selected_device est déjà une chaîne
