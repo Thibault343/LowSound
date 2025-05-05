@@ -130,6 +130,7 @@ def main(page: ft.Page):
     def delete_songs(e) :
         delete_song_from_json(e)
         page.update()
+        refresh_sounds_list(None)  # Met à jour la liste des sons
     
     def toggle_delete_mode(e):
         nonlocal delete_mode

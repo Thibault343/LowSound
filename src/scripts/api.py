@@ -3,6 +3,9 @@ import soundfile as sf
 from os import listdir
 import shutil
 import json
+from pathlib import Path
+
+
 def get_output_devices():
     """
     Retourne une liste des noms de périphériques audio de sortie disponibles.
@@ -33,13 +36,14 @@ def saved_settings(dd):
 
 def delete_song_from_json(e):
     with open("storage/data/sounds.json", 'r') as f:
-            data = json.load(f)
-    print(e['name'])
+        data = json.load(f)
 
-    # Supprimer l'utilisateur avec id = 2
-    for song in data:
-        if song['name'] == e['name']:
-            data.remove(song)
+    # Supprimer la chanson avec le nom correspondant
+    data = [song for song in data if song['name'] != e['name']]
+
+    # Écrire les données mises à jour dans le fichier JSON
+    with open("storage/data/sounds.json", 'w') as f:
+        json.dump(data, f, indent=4)
 
 def play_sound(sound, selected_device):
     # Utiliser directement le nom du périphérique sélectionné
@@ -68,8 +72,7 @@ def main():
     
     return output_devices
 
-import os
-from pathlib import Path
+
 def createNewSong(songName, songPath, imagePath):
     if imagePath == "Aucune image sélectionné": # Si l'image n'est pas spécifiée, on utilise une image par défaut
         imagePath = "../assets/icon2.png"
