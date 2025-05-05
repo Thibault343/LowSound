@@ -78,6 +78,13 @@ def main(page: ft.Page):
         api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
         statuscreate.value = "Son ajouté avec succès !"
         statuscreate.color = "green"
+        sound_name_input.value = ""
+        selected_song_file.value = ""
+        selected_image_file.value = ""
+        sound_name_input.update()
+        selected_song_file.update()
+        selected_image_file.update()
+
         statuscreate.update()
     # function to refresh the songs list
     def refresh_sounds_list(_):
@@ -306,6 +313,7 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
     statuscreate = ft.Text("")
     # Contenu de la page Ajouter un son
     sound_name_input = ft.TextField(label="Nom du son")
+
     add_song_container.controls = [
         ft.Text("Ajouter un son :"),
         sound_name_input,
