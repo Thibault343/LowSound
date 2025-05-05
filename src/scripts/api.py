@@ -1,10 +1,8 @@
 import sounddevice as sd
 import soundfile as sf
-from os import listdir
 import shutil
 import json
-from pathlib import Path
-
+import os
 
 def get_output_devices():
     """
@@ -35,6 +33,7 @@ def saved_settings(dd):
         f.truncate()
 
 def delete_song_from_json(e):
+    print(e)
     with open("storage/data/sounds.json", 'r') as f:
         data = json.load(f)
 
@@ -44,6 +43,9 @@ def delete_song_from_json(e):
     # Écrire les données mises à jour dans le fichier JSON
     with open("storage/data/sounds.json", 'w') as f:
         json.dump(data, f, indent=4)
+    os.remove(e["src"])
+    
+    
 
 def play_sound(sound, selected_device):
     # Utiliser directement le nom du périphérique sélectionné
