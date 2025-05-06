@@ -2,6 +2,7 @@ import flet as ft
 from scripts import api
 from scripts.api import delete_song_from_json
 from scripts.api import saved_settings
+from scripts.api import pause_and_play
 from scripts import front_preloading as preloading
 import json
 import os
@@ -10,6 +11,7 @@ import os
 devices_list = api.get_output_devices()
 sounds_list = api.list_sounds()
 max_sounds_per_row = 7
+
 
 def main(page: ft.Page):
     page.theme_mode = "dark"
@@ -40,6 +42,7 @@ def main(page: ft.Page):
         selected_sound = sound['src']
         print(f"Playing sound: {sound['name']}")
         api.play_sound(selected_sound, dropdown.value)
+
     # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
         # Vérifiez si un fichier a été sélectionné
@@ -120,6 +123,7 @@ def main(page: ft.Page):
                                     on_click=lambda _, s=sound: delete_songs(s),
                                     visible=delete_mode,  # Affiche uniquement si delete_mode est True
                                 ),
+
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -251,13 +255,14 @@ def main(page: ft.Page):
                                     style=ft.ButtonStyle(
                                         padding=ft.Padding(0, 0, 0, 0),
                                     ),
-                                ),ft.IconButton(
+                                ),
+                                ft.IconButton(
                                     icon=ft.Icons.DELETE,
                                     icon_color=ft.Colors.PINK_700,
                                     icon_size=20,
                                     tooltip="Nope",
                                     visible= delete_mode,
-                                    on_click=delete_songs
+                                    on_click=delete_songs,
                                 ),
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
@@ -276,7 +281,14 @@ def main(page: ft.Page):
     #                           Settings Page
     # ---------------------------------------------------------------------------------------------
     settings_container.controls = [
-        ft.Text("Paramètres :"),
+        ft.Text(
+                    "Paramêtre",
+                    style=ft.TextStyle(
+                        size=24,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
         ft.Text("Sélectionnez un périphérique audio :"),
 dropdown,
 ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
@@ -338,16 +350,43 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
         ft.ElevatedButton(text="Ajouter", on_click=validate_and_add_song),
         statuscreate
     ]
+    stopAndPlayButton = ft.IconButton(
+        icon=ft.Icons.STOP,
+        tooltip="Arrêter",
+        on_click=lambda _: pause_and_play(),
+    )
+
+    # Barre en bas avec les boutons Arrêter et Pause
+    bottom_bar = ft.Container(
+        content=ft.Row(
+            [
+                stopAndPlayButton,
+            ],
+            alignment=ft.MainAxisAlignment.END,  # Aligne les boutons à droite
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centre les boutons verticalement
+        ),
+        height=50,  # Hauteur de la barre
+        bgcolor="lightgray",  # Couleur de fond
+        padding=ft.Padding(10, 0, 10, 0),  # Ajoute un peu de marge sur les côtés
+    )
 
     # Mise en page principale
     page.add(
         ft.Column(
             [
-                navBar,
-                home_container,
-                settings_container,
-                add_song_container,
-            ]
+                ft.Column(
+                    [
+                        navBar,
+                        home_container,
+                        settings_container,
+                        add_song_container,
+                    ],
+                    expand=True,  # Permet à cette colonne de prendre tout l'espace disponible
+                ),
+                bottom_bar,  # Place la barre en bas
+            ],
+            expand=True,  # Permet à la colonne principale de s'étendre verticalement
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
     preloading.load_settings(dropdown)

@@ -4,6 +4,11 @@ import shutil
 import json
 import os
 
+
+
+
+
+
 def get_output_devices():
     """
     Retourne une liste des noms de périphériques audio de sortie disponibles.
@@ -60,6 +65,23 @@ def play_sound(sound, selected_device):
             print(f"Error playing sound: {e}")
     else:
         print("Selected device not found.")
+
+
+def pause_and_play():
+    """
+    Met en pause ou reprend la lecture en fonction de l'état actuel.
+    """
+    try:
+        sd.stop()
+        print("Playback paused.")
+    except Exception as e:
+        print(f"Error pausing playback: {e}")
+def stop_sound():
+    try:
+        sd.stop()
+        print("Playback stopped.")
+    except Exception as e:
+        print(f"Error stopping sound: {e}")
 
 def main():
     print("🔊 Recherche des périphériques audio de sortie...")
