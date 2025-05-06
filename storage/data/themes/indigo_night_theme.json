@@ -1,0 +1,17 @@
+{
+    "color_scheme": {
+        "primary": "INDIGO_700",
+        "primary_container": "INDIGO_100",
+        "secondary": "YELLOW_800",
+        "secondary_container": "YELLOW_100",
+        "background": "BLUE_GREY_900",
+        "surface": "BLUE_GREY_800",
+        "error": "RED_ACCENT",
+        "on_primary": "WHITE",
+        "on_secondary": "BLACK",
+        "on_surface": "WHITE",
+        "on_background": "WHITE",
+        "on_error": "BLACK"
+    },
+    "page_bgcolor": "BLUE_GREY_900"
+}

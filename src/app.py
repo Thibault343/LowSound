@@ -14,6 +14,7 @@ max_sounds_per_row = 7
 
 
 def main(page: ft.Page):
+    preloading.load_theme(page)
     page.theme_mode = "dark"
     # Conteneurs pour les pages
     home_container = ft.Column()
@@ -389,8 +390,8 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
-    preloading.load_settings(dropdown)
-
+    preloading.load_settings_page(dropdown)
+    
 ft.app(main)
 
 

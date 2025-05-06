@@ -1,3 +1,4 @@
 {
-    "device": "Microsoft Sound Mapper - Output"
+    "device": "Microsoft Sound Mapper - Output",
+    "default_theme": "indigo_night_theme"
 }
