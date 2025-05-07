@@ -27,6 +27,9 @@ One external app:
 -   [Soundfile](https://pypi.org/project/soundfile/) versions : 0.13.1
 -   [VB CABLE](https://vb-audio.com/Cable/)
 
+### Download the project
+Download the project with git or by zip.
+zip: [download](https://github.com/Thibault343/LowSound/archive/refs/heads/main.zip)
 ### Installing packages
 
 ```python
