@@ -4,6 +4,7 @@
 #***************************************************
 import json
 import flet
+import os
 
 
 def load_settings():
@@ -25,14 +26,25 @@ def load_settings_page(dropdown):
     """Load settings from a JSON file."""
     
 
-def load_theme(page):
+def load_theme():
     global settings
     theme_name = settings.get("default_theme")  # Utiliser "default_theme" par défaut
-    print(f"Thème load by default : {theme_name}")
-    # try:
-    #     with open(f"storage\data\themes\{theme_name}.json", "r") as f:
-    #         default_theme = json.load(f)
-    #         print(default_theme)
-    # except FileNotFoundError:
-    #     print("Settings file not found. Using default settings.")
+    try:
+        with open(f"storage/data/themes/{theme_name}.json", "r") as f:
+            default_theme = json.load(f)
+            return default_theme
+    except FileNotFoundError:
+        print("Settings file not found. Using default settings.")
 
+# load the theme list for the dropdown
+def load_theme_list():
+    theme_list = []
+    theme_dir = "storage/data/themes"
+    try:
+        for file_name in os.listdir(theme_dir):
+            if file_name.endswith(".json"):
+                theme_list.append(file_name[:-5])  # Remove the ".json" extension
+        return theme_list
+    except FileNotFoundError:
+        print(f"Directory {theme_dir} not found.")
+        return []

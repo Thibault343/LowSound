@@ -29,10 +29,11 @@ def list_sounds():
         print("Sounds file not found. Using default sounds.")
         return ["sound1.mp3", "sound2.mp3"]
 
-def saved_settings(dd):
+def saved_settings(dropdown_device, dropdown_theme):
     with open(r'storage\data\settings.json', 'r+') as f:
         settings = json.load(f)
-        settings['device'] = dd.value
+        settings['device'] = dropdown_device.value
+        settings['default_theme'] = dropdown_theme.value
         f.seek(0)
         json.dump(settings, f, indent=4)
         f.truncate()
