@@ -13,7 +13,7 @@ def get_output_devices():
     """
     Retourne une liste des noms de périphériques audio de sortie disponibles.
     """
-    devices = sd.query_devices()
+    devices = sd.query_devices() 
     output_devices = [d['name'] for d in devices if d['max_output_channels'] > 0]
     return output_devices
     
@@ -32,8 +32,11 @@ def list_sounds():
 def saved_settings(dropdown_device, dropdown_theme):
     with open(r'storage\data\settings.json', 'r+') as f:
         settings = json.load(f)
+        if settings['device'] != dropdown_device.value:
+            settings['device'] = dropdown_theme.value
         settings['device'] = dropdown_device.value
-        settings['default_theme'] = dropdown_theme.value
+        if settings['default_theme'] != dropdown_theme.value:
+            settings['default_theme'] = dropdown_theme.value
         f.seek(0)
         json.dump(settings, f, indent=4)
         f.truncate()
