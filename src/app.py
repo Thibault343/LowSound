@@ -10,11 +10,20 @@ import os
 # init
 devices_list = api.get_output_devices()
 sounds_list = api.list_sounds()
+themes_list = preloading.load_theme_list()
 max_sounds_per_row = 7
 
 
 def main(page: ft.Page):
-    page.theme_mode = "dark"
+    theme = preloading.load_theme()
+
+    # Convertir le dictionnaire color_scheme en ft.ColorScheme
+    color_scheme = ft.ColorScheme(**theme['color_scheme'])
+
+    # Configurer le thème de la page
+    page.theme = ft.Theme(color_scheme=color_scheme)
+    page.theme_mode = theme['theme_mode']
+    page.bgcolor = theme['page_bgcolor']
     # Conteneurs pour les pages
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
@@ -41,7 +50,7 @@ def main(page: ft.Page):
     def play_sound(sound):
         selected_sound = sound['src']
         print(f"Playing sound: {sound['name']}")
-        api.play_sound(selected_sound, dropdown.value)
+        api.play_sound(selected_sound, dropdown_device.value)
 
     # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
@@ -157,11 +166,7 @@ def main(page: ft.Page):
         page.update()
         refresh_sounds_list(None)  # Met à jour la liste des sons
 
-    # Dropdown pour les périphériques
-    dropdown = ft.Dropdown(
-        options=[ft.dropdown.Option(device) for device in devices_list],
-        autofocus=True,
-    )
+
 
     # ---------------------------------------------------------------------------------------------
     #                           Nav Bar
@@ -280,21 +285,50 @@ def main(page: ft.Page):
     # ---------------------------------------------------------------------------------------------
     #                           Settings Page
     # ---------------------------------------------------------------------------------------------
+        # Dropdown pour les périphériques
+    dropdown_device = ft.Dropdown(
+        options=[ft.dropdown.Option(device) for device in devices_list],
+        autofocus=True,
+    )
+    dropdown_default_theme = ft.Dropdown(
+        options=[ft.dropdown.Option(theme) for theme in themes_list],
+        autofocus=True,
+    )
+    
+    
     settings_container.controls = [
         ft.Text(
-                    "Paramêtre",
+                    "Paramètres",
                     style=ft.TextStyle(
                         size=24,
                         weight=ft.FontWeight.BOLD,
                         color='blue',
                     ),
                 ),
+        ft.Text(
+                    "Audio",
+                    style=ft.TextStyle(
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
         ft.Text("Sélectionnez un périphérique audio :"),
-dropdown,
-ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
-        ft.Switch(label="Activer une option"),
-        ft.Slider(label="Volume", min=0, max=100, value=50),
-    ]
+        dropdown_device,
+        ft.Text(
+                    "Apparence",
+                    style=ft.TextStyle(
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
+        ft.Text("Théme:"),
+        dropdown_default_theme,
+        ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown_device, dropdown_default_theme)),
+                ft.Switch(label="Activer une option"),
+                ft.Slider(label="Volume", min=0, max=100, value=50),
+            ]
 
     
 
@@ -389,8 +423,8 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
-    preloading.load_settings(dropdown)
-
+    preloading.load_settings_page(dropdown_device)
+    
 ft.app(main)
 
 
