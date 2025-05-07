@@ -423,7 +423,7 @@ def main(page: ft.Page):
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
-    preloading.load_settings_page(dropdown_device)
+    preloading.load_settings_page(dropdown_device, dropdown_default_theme)
     
 ft.app(main)
 

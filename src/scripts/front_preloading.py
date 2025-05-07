@@ -20,9 +20,10 @@ def load_settings():
 
 settings = load_settings()
 
-def load_settings_page(dropdown):
+def load_settings_page(dropdown_device, dropdown_default_theme):
     global settings
-    dropdown.value = settings.get("device")
+    dropdown_device.value = settings.get("device")
+    dropdown_default_theme.value = settings.get("default_theme")
     """Load settings from a JSON file."""
     
 
