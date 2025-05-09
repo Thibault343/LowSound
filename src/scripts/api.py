@@ -112,22 +112,35 @@ def createNewSong(songName, songPath, imagePath):
     if songName.strip() != "":
         # Get the song file extension
         songType = songPath.split(".")[-1].lower()
-
         # Destination paths
-        dest_song_path = f"storage/data/sounds/{songName}.{songType}"
+        default_song_path = "storage/data/sounds/"
+        dest_song_path = f"{default_song_path}{songName}.{songType}"
         dest_image_base = f"storage/data/images/{songName}"
 
         # Check if source files exist
-        song_file_exists = os.path.isfile(songPath)
-        image_file_exists = os.path.isfile(imagePath)
+        src_song_file_exists = os.path.isfile(songPath)
+        src_image_file_exists = os.path.isfile(imagePath)
+        # Verify if the song existing
+        dest_song_exists = os.path.isfile(dest_song_path)
+        # If the song already exists, append an index to the name
+        if dest_song_exists:
+            i = 0
+            # Increment the index until a unique name is found
+            while dest_song_exists:
+                i += 1
+                dest_song_exists = os.path.isfile(f"{default_song_path}{songName}({i}).{songType}")
+            dest_song_path = f"{default_song_path}{songName}({i}).{songType}"
+            dest_image_base = f"storage/data/images/{songName}({i})"
+            songName = f"{songName}({i})"
 
+            
         # Copy song if valid
-        if song_file_exists:
+        if src_song_file_exists:
             shutil.copy2(songPath, dest_song_path)
             songPath = dest_song_path  # Update to new location
 
         # Copy image if valid and set appropriate extension
-        if image_file_exists:
+        if src_image_file_exists:
             image_ext = imagePath.split(".")[-1].lower()
             if image_ext in ["png", "jpg", "jpeg"]:
                 dest_image_path = f"{dest_image_base}.{image_ext}"
