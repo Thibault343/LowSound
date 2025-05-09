@@ -74,6 +74,7 @@ def main():
     
     return output_devices
 
+<<<<<<< Updated upstream
 
 def createNewSong(songName, songPath, imagePath):
     if imagePath == "Aucune image sélectionné": # Si l'image n'est pas spécifiée, on utilise une image par défaut
@@ -82,18 +83,74 @@ def createNewSong(songName, songPath, imagePath):
     if songName.replace(" ", "") != "":
         shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")  # Copie le fichier audio dans le dossier de stockage
         songPath = f"storage/data/sounds/{songName}.mp3"  # Met à jour le chemin du fichier audio
+=======
+# Create and save a new song entry (copy audio/image files, update JSON)
+import os
+import shutil
+import json
+
+def createNewSong(songName, songPath, imagePath):
+    # Use default image if none selected
+    if imagePath == "Aucune image sélectionné":
+        imagePath = "../assets/icon2.png"
+
+    # Proceed only if the song name is not empty or just spaces
+    if songName.strip() != "":
+        # Get the song file extension
+        songType = songPath.split(".")[-1].lower()
+
+        # Destination paths
+        dest_song_path = f"storage/data/sounds/{songName}.{songType}"
+        dest_image_base = f"storage/data/images/{songName}"
+
+        # Check if source files exist
+        song_file_exists = os.path.isfile(songPath)
+        image_file_exists = os.path.isfile(imagePath)
+
+        # Copy song if valid
+        if song_file_exists:
+            shutil.copy2(songPath, dest_song_path)
+            songPath = dest_song_path  # Update to new location
+
+        # Copy image if valid and set appropriate extension
+        if image_file_exists:
+            image_ext = imagePath.split(".")[-1].lower()
+            if image_ext in ["png", "jpg", "jpeg"]:
+                dest_image_path = f"{dest_image_base}.{image_ext}"
+            else:
+                dest_image_path = f"{dest_image_base}.jpeg"  # Default to .jpeg
+
+            shutil.copy2(imagePath, dest_image_path)
+            imagePath = dest_image_path  # Update to new location
+        else:
+            imagePath = "../assets/icon2.png"  # Default image if not found
+
+        # Create the new song entry
+>>>>>>> Stashed changes
         new_song = {
             "name": songName,
-            "src": songPath if songPath.replace(" ", "") != "" else "",
-            "img": imagePath if imagePath.replace(" ", "") != "" else "../assets/icon2.png"
+            "src": songPath if os.path.isfile(songPath) else "",
+            "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png"
         }
+<<<<<<< Updated upstream
+=======
+
+        # Read existing songs and append the new one
+>>>>>>> Stashed changes
         try:
             with open("storage/data/sounds.json", "r") as file:
                 sounds = json.load(file)
         except FileNotFoundError:
+<<<<<<< Updated upstream
             sounds = []  # Initialize an empty list if the file doesn't exist
         
+=======
+            sounds = []  # Start with empty list if file does not exist
+
+>>>>>>> Stashed changes
         sounds.append(new_song)
+
+        # Write updated list back to the file
         with open("storage/data/sounds.json", "w") as file:
             json.dump(sounds, file, indent=4)
         
@@ -105,5 +162,10 @@ def createNewSong(songName, songPath, imagePath):
 
                 
 
+<<<<<<< Updated upstream
+=======
+
+# Run the main function if script is executed directly
+>>>>>>> Stashed changes
 if __name__ == "__main__":
     main()
