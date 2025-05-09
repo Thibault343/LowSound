@@ -32,11 +32,19 @@ def list_sounds():
 def saved_settings(dropdown_device, dropdown_theme):
     with open(r'storage\data\settings.json', 'r+') as f:
         settings = json.load(f)
+<<<<<<< Updated upstream
         settings['device'] = dropdown_device.value
         settings['default_theme'] = dropdown_theme.value
+=======
+        if settings['device'] != dropdown_device.value:
+            settings['device'] = dropdown_theme.value
+        if settings['default_theme'] != dropdown_theme.value:
+            settings['default_theme'] = dropdown_theme.value
+>>>>>>> Stashed changes
         f.seek(0)
         json.dump(settings, f, indent=4)
         f.truncate()
+
 
 def delete_song_from_json(e):
     print(e)
