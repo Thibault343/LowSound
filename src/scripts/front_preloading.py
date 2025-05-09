@@ -27,9 +27,12 @@ def load_settings_page(dropdown_device, dropdown_default_theme):
     """Load settings from a JSON file."""
     
 
-def load_theme():
+def get_theme_colors(theme):
     global settings
-    theme_name = settings.get("default_theme")  # Utiliser "default_theme" par défaut
+    if theme == None:
+        theme_name = settings.get("default_theme")  # Utiliser "default_theme" par défaut
+    else: 
+        theme_name = theme.value
     try:
         with open(f"storage/data/themes/{theme_name}.json", "r") as f:
             default_theme = json.load(f)
@@ -38,7 +41,7 @@ def load_theme():
         print("Settings file not found. Using default settings.")
 
 # load the theme list for the dropdown
-def load_theme_list():
+def get_theme_list():
     theme_list = []
     theme_dir = "storage/data/themes"
     try:

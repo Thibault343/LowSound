@@ -41,6 +41,7 @@ def saved_settings(dropdown_device, dropdown_theme):
         json.dump(settings, f, indent=4)
         f.truncate()
 
+
 def delete_song_from_json(e):
     print(e)
     with open("storage/data/sounds.json", 'r') as f:

@@ -8,23 +8,42 @@ import json
 import os
 
 # init
-devices_list = api.get_output_devices()
-sounds_list = api.list_sounds()
-themes_list = preloading.load_theme_list()
-max_sounds_per_row = 7
+devices_list = api.get_output_devices() #Get the devices list
+sounds_list = api.list_sounds() # Get the sounds list
+themes_list = preloading.get_theme_list() # Get the  themes list
+max_sounds_per_row = 7 # max button per row 
 
-
+# main app
 def main(page: ft.Page):
-    theme = preloading.load_theme()
 
-    # Convertir le dictionnaire color_scheme en ft.ColorScheme
-    color_scheme = ft.ColorScheme(**theme['color_scheme'])
+    # apply settings to the app
+    def apply_settings(device, theme):
+        settings = preloading.load_settings()
+        print(settings)
+        if theme != settings["default_theme"]:
+            #apply theme
+            load_theme(theme)
+            page.update()
+            # saved settings in the json
+            saved_settings(device, theme)
+        if device != settings["device"]:
+            saved_settings(device,theme)
 
-    # Configurer le thème de la page
-    page.theme = ft.Theme(color_scheme=color_scheme)
-    page.theme_mode = theme['theme_mode']
-    page.bgcolor = theme['page_bgcolor']
-    # Conteneurs pour les pages
+    # load a theme
+    def load_theme(theme_name) : 
+        if theme_name == "":
+            theme = preloading.get_theme_colors(None)
+        else: 
+            theme = preloading.get_theme_colors(theme_name)
+        # Convertir le dictionnaire color_scheme en ft.ColorScheme
+        color_scheme = ft.ColorScheme(**theme['color_scheme'])
+
+        # Configurer le thème de la page
+        page.theme = ft.Theme(color_scheme=color_scheme)
+        page.theme_mode = theme['theme_mode']
+        page.bgcolor = theme['page_bgcolor']
+    load_theme("")
+    # Conteners pages
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
     add_song_container = ft.Column(visible=False)
@@ -207,7 +226,7 @@ def main(page: ft.Page):
                     style=ft.TextStyle(
                         size=24,
                         weight=ft.FontWeight.BOLD,
-                        color='blue',
+                        color=page.theme.color_scheme.primary,
                     ),
                 ),
                 # Buttons on right 
@@ -325,7 +344,7 @@ def main(page: ft.Page):
                 ),
         ft.Text("Théme:"),
         dropdown_default_theme,
-        ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown_device, dropdown_default_theme)),
+        ft.ElevatedButton(text="Save", on_click=lambda _: apply_settings(dropdown_device, dropdown_default_theme)),
                 ft.Switch(label="Activer une option"),
                 ft.Slider(label="Volume", min=0, max=100, value=50),
             ]
