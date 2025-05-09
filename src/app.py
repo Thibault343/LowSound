@@ -2,18 +2,48 @@ import flet as ft
 from scripts import api
 from scripts.api import delete_song_from_json
 from scripts.api import saved_settings
+from scripts.api import pause_and_play
 from scripts import front_preloading as preloading
 import json
 import os
 
 # init
-devices_list = api.get_output_devices()
-sounds_list = api.list_sounds()
-max_sounds_per_row = 7
+devices_list = api.get_output_devices() #Get the devices list
+sounds_list = api.list_sounds() # Get the sounds list
+themes_list = preloading.get_theme_list() # Get the  themes list
+max_sounds_per_row = 7 # max button per row 
 
+# main app
 def main(page: ft.Page):
-    page.theme_mode = "dark"
-    # Conteneurs pour les pages
+
+    # apply settings to the app
+    def apply_settings(device, theme):
+        settings = preloading.load_settings()
+        print(settings)
+        if theme != settings["default_theme"]:
+            #apply theme
+            load_theme(theme)
+            page.update()
+            # saved settings in the json
+            saved_settings(device, theme)
+        if device != settings["device"]:
+            saved_settings(device,theme)
+
+    # load a theme
+    def load_theme(theme_name) : 
+        if theme_name == "":
+            theme = preloading.get_theme_colors(None)
+        else: 
+            theme = preloading.get_theme_colors(theme_name)
+        # Convertir le dictionnaire color_scheme en ft.ColorScheme
+        color_scheme = ft.ColorScheme(**theme['color_scheme'])
+
+        # Configurer le thème de la page
+        page.theme = ft.Theme(color_scheme=color_scheme)
+        page.theme_mode = theme['theme_mode']
+        page.bgcolor = theme['page_bgcolor']
+    load_theme("")
+    # Conteners pages
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
     add_song_container = ft.Column(visible=False)
@@ -24,6 +54,7 @@ def main(page: ft.Page):
             home_container.visible = True
             settings_container.visible = False
             add_song_container.visible = False
+            refresh_sounds_list(None)  # Met à jour la liste des sons
         elif e.control.data == "Paramètres":
             home_container.visible = False
             settings_container.visible = True
@@ -38,7 +69,8 @@ def main(page: ft.Page):
     def play_sound(sound):
         selected_sound = sound['src']
         print(f"Playing sound: {sound['name']}")
-        api.play_sound(selected_sound, dropdown.value)
+        api.play_sound(selected_sound, dropdown_device.value)
+
     # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
         # Vérifiez si un fichier a été sélectionné
@@ -77,6 +109,13 @@ def main(page: ft.Page):
         api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
         statuscreate.value = "Son ajouté avec succès !"
         statuscreate.color = "green"
+        sound_name_input.value = ""
+        selected_song_file.value = ""
+        selected_image_file.value = ""
+        sound_name_input.update()
+        selected_song_file.update()
+        selected_image_file.update()
+
         statuscreate.update()
     # function to refresh the songs list
     def refresh_sounds_list(_):
@@ -112,6 +151,7 @@ def main(page: ft.Page):
                                     on_click=lambda _, s=sound: delete_songs(s),
                                     visible=delete_mode,  # Affiche uniquement si delete_mode est True
                                 ),
+
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -145,11 +185,7 @@ def main(page: ft.Page):
         page.update()
         refresh_sounds_list(None)  # Met à jour la liste des sons
 
-    # Dropdown pour les périphériques
-    dropdown = ft.Dropdown(
-        options=[ft.dropdown.Option(device) for device in devices_list],
-        autofocus=True,
-    )
+
 
     # ---------------------------------------------------------------------------------------------
     #                           Nav Bar
@@ -190,7 +226,7 @@ def main(page: ft.Page):
                     style=ft.TextStyle(
                         size=24,
                         weight=ft.FontWeight.BOLD,
-                        color='blue',
+                        color=page.theme.color_scheme.primary,
                     ),
                 ),
                 # Buttons on right 
@@ -243,13 +279,14 @@ def main(page: ft.Page):
                                     style=ft.ButtonStyle(
                                         padding=ft.Padding(0, 0, 0, 0),
                                     ),
-                                ),ft.IconButton(
+                                ),
+                                ft.IconButton(
                                     icon=ft.Icons.DELETE,
                                     icon_color=ft.Colors.PINK_700,
                                     icon_size=20,
                                     tooltip="Nope",
                                     visible= delete_mode,
-                                    on_click=delete_songs
+                                    on_click=delete_songs,
                                 ),
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
@@ -267,14 +304,50 @@ def main(page: ft.Page):
     # ---------------------------------------------------------------------------------------------
     #                           Settings Page
     # ---------------------------------------------------------------------------------------------
+        # Dropdown pour les périphériques
+    dropdown_device = ft.Dropdown(
+        options=[ft.dropdown.Option(device) for device in devices_list],
+        autofocus=True,
+    )
+    dropdown_default_theme = ft.Dropdown(
+        options=[ft.dropdown.Option(theme) for theme in themes_list],
+        autofocus=True,
+    )
+    
+    
     settings_container.controls = [
-        ft.Text("Paramètres :"),
+        ft.Text(
+                    "Paramètres",
+                    style=ft.TextStyle(
+                        size=24,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
+        ft.Text(
+                    "Audio",
+                    style=ft.TextStyle(
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
         ft.Text("Sélectionnez un périphérique audio :"),
-dropdown,
-ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
-        ft.Switch(label="Activer une option"),
-        ft.Slider(label="Volume", min=0, max=100, value=50),
-    ]
+        dropdown_device,
+        ft.Text(
+                    "Apparence",
+                    style=ft.TextStyle(
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        color='blue',
+                    ),
+                ),
+        ft.Text("Théme:"),
+        dropdown_default_theme,
+        ft.ElevatedButton(text="Save", on_click=lambda _: apply_settings(dropdown_device, dropdown_default_theme)),
+                ft.Switch(label="Activer une option"),
+                ft.Slider(label="Volume", min=0, max=100, value=50),
+            ]
 
     
 
@@ -305,6 +378,7 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
     statuscreate = ft.Text("")
     # Contenu de la page Ajouter un son
     sound_name_input = ft.TextField(label="Nom du son")
+
     add_song_container.controls = [
         ft.Text("Ajouter un son :"),
         sound_name_input,
@@ -329,20 +403,47 @@ ft.ElevatedButton(text="Save", on_click=lambda _: saved_settings(dropdown)),
         ft.ElevatedButton(text="Ajouter", on_click=validate_and_add_song),
         statuscreate
     ]
+    stopAndPlayButton = ft.IconButton(
+        icon=ft.Icons.STOP,
+        tooltip="Arrêter",
+        on_click=lambda _: pause_and_play(),
+    )
+
+    # Barre en bas avec les boutons Arrêter et Pause
+    bottom_bar = ft.Container(
+        content=ft.Row(
+            [
+                stopAndPlayButton,
+            ],
+            alignment=ft.MainAxisAlignment.END,  # Aligne les boutons à droite
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Centre les boutons verticalement
+        ),
+        height=50,  # Hauteur de la barre
+        bgcolor="lightgray",  # Couleur de fond
+        padding=ft.Padding(10, 0, 10, 0),  # Ajoute un peu de marge sur les côtés
+    )
 
     # Mise en page principale
     page.add(
         ft.Column(
             [
-                navBar,
-                home_container,
-                settings_container,
-                add_song_container,
-            ]
+                ft.Column(
+                    [
+                        navBar,
+                        home_container,
+                        settings_container,
+                        add_song_container,
+                    ],
+                    expand=True,  # Permet à cette colonne de prendre tout l'espace disponible
+                ),
+                bottom_bar,  # Place la barre en bas
+            ],
+            expand=True,  # Permet à la colonne principale de s'étendre verticalement
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
-    preloading.load_settings(dropdown)
-
+    preloading.load_settings_page(dropdown_device, dropdown_default_theme)
+    
 ft.app(main)
 
 

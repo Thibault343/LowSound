@@ -4,52 +4,58 @@ import shutil
 import json
 import os
 
+# Get a list of all available output audio devices
 def get_output_devices():
     """
-    Retourne une liste des noms de périphériques audio de sortie disponibles.
+    Returns a list of available output audio device names.
     """
-    devices = sd.query_devices()
+    devices = sd.query_devices() 
     output_devices = [d['name'] for d in devices if d['max_output_channels'] > 0]
     return output_devices
-    
+
+# List all available sound files listed in the JSON storage
 def list_sounds():
     """
-    Retourne une liste des fichiers .wav dans le dossier des sons.
+    Returns a list of .wav files from the sound folder.
     """
     try:
-        with open("storage\data\sounds.json", "r") as f:
+        with open("storage/data/sounds.json", "r") as f:
             sounds = json.load(f)
             return sounds
     except FileNotFoundError:
         print("Sounds file not found. Using default sounds.")
         return ["sound1.mp3", "sound2.mp3"]
 
-def saved_settings(dd):
-    with open(r'storage\data\settings.json', 'r+') as f:
+# Save selected device and theme to settings.json
+def saved_settings(dropdown_device, dropdown_theme):
+    with open('storage/data/settings.json', 'r+') as f:
         settings = json.load(f)
-        settings['device'] = dd.value
+        if settings['device'] != dropdown_device.value:
+            settings['device'] = dropdown_theme.value
+        if settings['default_theme'] != dropdown_theme.value:
+            settings['default_theme'] = dropdown_theme.value
         f.seek(0)
         json.dump(settings, f, indent=4)
         f.truncate()
 
+# Delete a song from JSON and filesystem
 def delete_song_from_json(e):
-    print(e)
     with open("storage/data/sounds.json", 'r') as f:
         data = json.load(f)
 
-    # Supprimer la chanson avec le nom correspondant
+    # Remove the song with the matching name
     data = [song for song in data if song['name'] != e['name']]
 
-    # Écrire les données mises à jour dans le fichier JSON
+    # Write updated data back to JSON file
     with open("storage/data/sounds.json", 'w') as f:
         json.dump(data, f, indent=4)
-    os.remove(e["src"])
-    
-    
 
+    # Remove the sound file from storage
+    os.remove(e["src"])
+
+# Play a sound on the selected output device
 def play_sound(sound, selected_device):
-    # Utiliser directement le nom du périphérique sélectionné
-    device_name = selected_device  # selected_device est déjà une chaîne
+    device_name = selected_device  # Already a string
     device_info = next((d for d in sd.query_devices() if d['name'] == device_name), None)
     if device_info:
         try:
@@ -61,23 +67,43 @@ def play_sound(sound, selected_device):
     else:
         print("Selected device not found.")
 
+# Pause or resume sound playback
+def pause_and_play():
+    """
+    Pauses or resumes playback depending on the current state.
+    """
+    try:
+        sd.stop()
+        print("Playback paused.")
+    except Exception as e:
+        print(f"Error pausing playback: {e}")
+
+# Stop sound playback
+def stop_sound():
+    try:
+        sd.stop()
+        print("Playback stopped.")
+    except Exception as e:
+        print(f"Error stopping sound: {e}")
+
+# Entry point to list all output devices
 def main():
-    print("🔊 Recherche des périphériques audio de sortie...")
+    print("🔊 Searching for audio output devices...")
     output_devices = get_output_devices()
     
     if not output_devices:
-        print("❌ Aucun périphérique de sortie audio détecté.")
+        print("❌ No output audio devices found.")
     else:
-        print("✅ Périphériques détectés :")
-        for i, dev in enumerate(output_devices):
-            print(f"{i + 1}. {dev}")
+        print("✅ Devices detected:")
     
     return output_devices
 
 <<<<<<< Updated upstream
 
 def createNewSong(songName, songPath, imagePath):
-    if imagePath == "Aucune image sélectionné": # Si l'image n'est pas spécifiée, on utilise une image par défaut
+    
+    # Use default image if none selected
+    if imagePath == "Aucune image sélectionné":
         imagePath = "../assets/icon2.png"
     
     if songName.replace(" ", "") != "":
