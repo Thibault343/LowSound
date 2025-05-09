@@ -40,7 +40,6 @@ def saved_settings(dropdown_device, dropdown_theme):
 
 # Delete a song from JSON and filesystem
 def delete_song_from_json(e):
-    print(e)
     with open("storage/data/sounds.json", 'r') as f:
         data = json.load(f)
 
@@ -96,14 +95,11 @@ def main():
         print("❌ No output audio devices found.")
     else:
         print("✅ Devices detected:")
-        for i, dev in enumerate(output_devices):
-            print(f"{i + 1}. {dev}")
     
     return output_devices
 
 # Create and save a new song entry (copy audio/image files, update JSON)
 def createNewSong(songName, songPath, imagePath):
-    print()
     
     # Use default image if none selected
     if imagePath == "Aucune image sélectionné":
