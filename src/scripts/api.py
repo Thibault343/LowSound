@@ -98,18 +98,6 @@ def main():
     
     return output_devices
 
-<<<<<<< Updated upstream
-
-def createNewSong(songName, songPath, imagePath):
-    
-    # Use default image if none selected
-    if imagePath == "Aucune image sélectionné":
-        imagePath = "../assets/icon2.png"
-    
-    if songName.replace(" ", "") != "":
-        shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")  # Copie le fichier audio dans le dossier de stockage
-        songPath = f"storage/data/sounds/{songName}.mp3"  # Met à jour le chemin du fichier audio
-=======
 # Create and save a new song entry (copy audio/image files, update JSON)
 import os
 import shutil
@@ -152,28 +140,19 @@ def createNewSong(songName, songPath, imagePath):
             imagePath = "../assets/icon2.png"  # Default image if not found
 
         # Create the new song entry
->>>>>>> Stashed changes
         new_song = {
             "name": songName,
             "src": songPath if os.path.isfile(songPath) else "",
             "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png"
         }
-<<<<<<< Updated upstream
-=======
 
         # Read existing songs and append the new one
->>>>>>> Stashed changes
         try:
             with open("storage/data/sounds.json", "r") as file:
                 sounds = json.load(file)
         except FileNotFoundError:
-<<<<<<< Updated upstream
-            sounds = []  # Initialize an empty list if the file doesn't exist
-        
-=======
             sounds = []  # Start with empty list if file does not exist
 
->>>>>>> Stashed changes
         sounds.append(new_song)
 
         # Write updated list back to the file
@@ -188,10 +167,7 @@ def createNewSong(songName, songPath, imagePath):
 
                 
 
-<<<<<<< Updated upstream
-=======
 
 # Run the main function if script is executed directly
->>>>>>> Stashed changes
 if __name__ == "__main__":
     main()

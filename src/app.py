@@ -19,7 +19,6 @@ def main(page: ft.Page):
     # apply settings to the app
     def apply_settings(device, theme):
         settings = preloading.load_settings()
-        print(settings)
         if theme != settings["default_theme"]:
             #apply theme
             load_theme(theme)
