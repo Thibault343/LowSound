@@ -47,22 +47,32 @@ def main(page: ft.Page):
     home_container = ft.Column()
     settings_container = ft.Column(visible=False)
     add_song_container = ft.Column(visible=False)
-
+    song_settings_container = ft.Column(visible=False)
     # Fonction pour gérer la sélection des pages
-    def change_Page(e):
+    def change_Page(e, sound=None):
         if e.control.data == "Accueil":
             home_container.visible = True
             settings_container.visible = False
             add_song_container.visible = False
+            song_settings_container.visible = False
             refresh_sounds_list(None)  # Met à jour la liste des sons
         elif e.control.data == "Paramètres":
             home_container.visible = False
             settings_container.visible = True
             add_song_container.visible = False
-        elif e.control.text == "Ajouter":
+            song_settings_container.visible = False
+        elif e.control.data == "Ajouter":
             home_container.visible = False
             settings_container.visible = False
             add_song_container.visible = True
+            song_settings_container.visible = False
+        elif e.control.data == "song_settings":
+            song_settings_title.value = f"Paramètres du son : {sound['name']}"  # <- définit le titre
+            song_settings_container.visible = True
+            home_container.visible = False
+            settings_container.visible = False
+            add_song_container.visible = False
+
         page.update()
 
     # Fonction pour jouer un son
@@ -143,6 +153,14 @@ def main(page: ft.Page):
                                     style=ft.ButtonStyle(
                                         padding=ft.Padding(0, 0, 0, 0),
                                     ),
+                                ),
+                                ft.IconButton(
+                                    icon=ft.Icons.SETTINGS,
+                                    data="song_settings",
+                                    icon_size=20,
+                                    visible=(not delete_mode),
+                                    on_click=lambda e, s=sound: change_Page(e, s),
+                                    tooltip="Paramètres du son",
                                 ),
                                 # Bouton corbeille visible uniquement en mode suppression
                                 ft.IconButton(
@@ -234,6 +252,7 @@ def main(page: ft.Page):
                     [
                         ft.ElevatedButton(
                             text="Ajouter",
+                            data="Ajouter",
                             on_click=change_Page,
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
@@ -281,6 +300,14 @@ def main(page: ft.Page):
                                     ),
                                 ),
                                 ft.IconButton(
+                                    icon=ft.Icons.SETTINGS,
+                                    data="song_settings",
+                                    icon_size=20,
+                                    visible=(not delete_mode),  # Affiche uniquement si delete_mode est False),
+                                    on_click=change_Page,
+                                    tooltip="Nope",
+                                ),
+                                ft.IconButton(
                                     icon=ft.Icons.DELETE,
                                     icon_color=ft.Colors.PINK_700,
                                     icon_size=20,
@@ -302,7 +329,7 @@ def main(page: ft.Page):
     ]
 
     # ---------------------------------------------------------------------------------------------
-    #                           Settings Page
+    #                           Global Settings Page
     # ---------------------------------------------------------------------------------------------
         # Dropdown pour les périphériques
     dropdown_device = ft.Dropdown(
@@ -373,7 +400,7 @@ def main(page: ft.Page):
 
 
     # ---------------------------------------------------------------------------------------------
-    #                           Add song Page
+    #                           Add Song Page
     # ---------------------------------------------------------------------------------------------
     statuscreate = ft.Text("")
     # Contenu de la page Ajouter un son
@@ -403,6 +430,30 @@ def main(page: ft.Page):
         ft.ElevatedButton(text="Ajouter", on_click=validate_and_add_song),
         statuscreate
     ]
+    
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Song Settings Page
+    # ---------------------------------------------------------------------------------------------
+    song_settings_title = ft.Text(
+                                "Paramètres du song",
+                                style=ft.TextStyle(
+                                    size=24,
+                                    weight=ft.FontWeight.BOLD,
+                                    color='blue',
+                                ),
+                            )
+    song_settings_container.controls = [
+        song_settings_title,
+        ft.ElevatedButton(text="Save"),
+                ft.Switch(label="Activer une option"),
+                ft.Slider(label="Volume", min=0, max=100, value=50),
+            ]
+
+
+    # ---------------------------------------------------------------------------------------------
+    #                           Bottom bar
+    # ---------------------------------------------------------------------------------------------
     stopAndPlayButton = ft.IconButton(
         icon=ft.Icons.STOP,
         tooltip="Arrêter",
@@ -433,6 +484,8 @@ def main(page: ft.Page):
                         home_container,
                         settings_container,
                         add_song_container,
+                        song_settings_container,
+
                     ],
                     expand=True,  # Permet à cette colonne de prendre tout l'espace disponible
                 ),

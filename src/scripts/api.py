@@ -100,51 +100,87 @@ def main():
     return output_devices
 
 # Create and save a new song entry (copy audio/image files, update JSON)
+
+
 def createNewSong(songName, songPath, imagePath):
-    
     # Use default image if none selected
     if imagePath == "Aucune image sélectionné":
         imagePath = "../assets/icon2.png"
-    
-    if songName.replace(" ", "") != "":
-        songType = songPath[-3:]
-        
-        # Copy audio file to storage folder
-        if songType == "mp3":
-            shutil.copy2(songPath, f"storage/data/sounds/{songName}.mp3")
+
+    # Proceed only if the song name is not empty or just spaces
+    if songName.strip() != "":
+        # Get the song file extension
+        songType = songPath.split(".")[-1].lower()
+        # Destination paths
+        default_song_path = "storage/data/sounds/"
+        dest_song_path = f"{default_song_path}{songName}.{songType}"
+        dest_image_base = f"storage/data/images/{songName}"
+
+        # Check if source files exist
+        src_song_file_exists = os.path.isfile(songPath)
+        src_image_file_exists = os.path.isfile(imagePath)
+        # Verify if the song existing
+        dest_song_exists = os.path.isfile(dest_song_path)
+        # If the song already exists, append an index to the name
+        if dest_song_exists:
+            i = 0
+            # Increment the index until a unique name is found
+            while dest_song_exists:
+                i += 1
+                dest_song_exists = os.path.isfile(f"{default_song_path}{songName}({i}).{songType}")
+            dest_song_path = f"{default_song_path}{songName}({i}).{songType}"
+            dest_image_base = f"storage/data/images/{songName}({i})"
+            songName = f"{songName}({i})"
+
+            
+        # Copy song if valid
+        if src_song_file_exists:
+            shutil.copy2(songPath, dest_song_path)
+            songPath = dest_song_path  # Update to new location
+
+        # Copy image if valid and set appropriate extension
+        if src_image_file_exists:
+            image_ext = imagePath.split(".")[-1].lower()
+            if image_ext in ["png", "jpg", "jpeg"]:
+                dest_image_path = f"{dest_image_base}.{image_ext}"
+            else:
+                dest_image_path = f"{dest_image_base}.jpeg"  # Default to .jpeg
+
+            shutil.copy2(imagePath, dest_image_path)
+            imagePath = dest_image_path  # Update to new location
         else:
-            shutil.copy2(songPath, f"storage/data/sounds/{songName}.wav")
-        songPath = f"storage/data/sounds/{songName}.{songType}"
-        
-        # Copy and determine image type
-        if imagePath[-3:] == "png":
-            shutil.copy2(imagePath, f"storage/data/images/{songName}.png")
-            imagePath = f"storage/data/images/{songName}.png"
-        elif imagePath[-3:] == "jgp":
-            shutil.copy2(imagePath, f"storage/data/images/{songName}.jpg")
-            imagePath = f"storage/data/images/{songName}.jpg"
-        else:
-            shutil.copy2(imagePath, f"storage/data/images/{songName}.jpeg")
-            imagePath = f"storage/data/images/{songName}.jpeg"
+            imagePath = "../assets/icon2.png"  # Default image if not found
 
         # Create the new song entry
         new_song = {
             "name": songName,
-            "src": songPath if songPath.replace(" ", "") != "" else "",
-            "img": imagePath if imagePath.replace(" ", "") != "" else "../assets/icon2.png"
+            "src": songPath if os.path.isfile(songPath) else "",
+            "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png"
         }
 
-        # Read existing songs, append new one, and save back
+        # Read existing songs and append the new one
         try:
             with open("storage/data/sounds.json", "r") as file:
                 sounds = json.load(file)
         except FileNotFoundError:
-            sounds = []  # If file doesn't exist, start with empty list
-        
+            sounds = []  # Start with empty list if file does not exist
+
         sounds.append(new_song)
+
+        # Write updated list back to the file
         with open("storage/data/sounds.json", "w") as file:
             json.dump(sounds, file, indent=4)
+        
+            
+
+
+
+    
+
+                
+
 
 # Run the main function if script is executed directly
 if __name__ == "__main__":
+
     main()
