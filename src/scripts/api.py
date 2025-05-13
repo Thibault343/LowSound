@@ -14,7 +14,7 @@ def get_output_devices():
     return output_devices
 
 # List all available sound files listed in the JSON storage
-def list_sounds():
+def list_sounds(name, onefile):
     """
     Returns a list of .wav files from the sound folder.
     """
@@ -25,7 +25,7 @@ def list_sounds():
     except FileNotFoundError:
         print("Sounds file not found. Using default sounds.")
         return ["sound1.mp3", "sound2.mp3"]
-
+    
 # Save selected device and theme to settings.json
 def saved_settings(dropdown_device, dropdown_theme):
     with open('storage/data/settings.json', 'r+') as f:
@@ -172,7 +172,6 @@ def createNewSong(songName, songPath, imagePath):
             json.dump(sounds, file, indent=4)
         
             
-
 
 
     

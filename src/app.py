@@ -9,17 +9,21 @@ import os
 
 # init
 devices_list = api.get_output_devices() #Get the devices list
-sounds_list = api.list_sounds() # Get the sounds list
+sounds_list = api.list_sounds("", False) # Get the sounds list
 themes_list = preloading.get_theme_list() # Get the  themes list
 max_sounds_per_row = 7 # max button per row 
+
+selected_song_settings = {}
+
+
 
 # main app
 def main(page: ft.Page):
 
+
     # apply settings to the app
     def apply_settings(device, theme):
         settings = preloading.load_settings()
-        print(settings)
         if theme != settings["default_theme"]:
             #apply theme
             load_theme(theme)
@@ -49,31 +53,45 @@ def main(page: ft.Page):
     add_song_container = ft.Column(visible=False)
     song_settings_container = ft.Column(visible=False)
     # Fonction pour gérer la sélection des pages
-    def change_Page(e, sound=None):
-        if e.control.data == "Accueil":
-            home_container.visible = True
-            settings_container.visible = False
-            add_song_container.visible = False
-            song_settings_container.visible = False
-            refresh_sounds_list(None)  # Met à jour la liste des sons
-        elif e.control.data == "Paramètres":
-            home_container.visible = False
-            settings_container.visible = True
-            add_song_container.visible = False
-            song_settings_container.visible = False
-        elif e.control.data == "Ajouter":
-            home_container.visible = False
-            settings_container.visible = False
-            add_song_container.visible = True
-            song_settings_container.visible = False
-        elif e.control.data == "song_settings":
-            song_settings_title.value = f"Paramètres du son : {sound['name']}"  # <- définit le titre
-            song_settings_container.visible = True
-            home_container.visible = False
-            settings_container.visible = False
-            add_song_container.visible = False
+    def change_page(e, sound=None):
+        global selected_song_settings
+        target_page = e.control.data
 
+        # Masque tous les conteneurs
+        def hide_all_containers():
+            home_container.visible = False
+            settings_container.visible = False
+            add_song_container.visible = False
+            song_settings_container.visible = False
+
+        # Affiche le conteneur demandé
+        def show_container(page_name):
+            global selected_song_settings
+            if page_name == "Accueil":
+                home_container.visible = True
+                refresh_sounds_list(None)
+            elif page_name == "Paramètres":
+                settings_container.visible = True
+            elif page_name == "Ajouter":
+                add_song_container.visible = True
+            elif page_name == "song_settings":
+                song_settings_container.visible = True
+                print("Sound reçu :", sound)  # ← ajoute cette ligne
+                if sound is not None:
+                        selected_song_settings = sound
+                        print(f"voici le settings : {selected_song_settings}")
+                        img_path = selected_song_settings.get("img", "")  # éviter une exception si la clé n'existe pas
+                        print('voici le img_path : ', img_path)
+                        song_name_display.value = f"{selected_song_settings['name']}"
+                        song_image.src = img_path  # Met à jour l’image dynamiquement
+                        song_image.update()
+
+
+
+        hide_all_containers()
+        show_container(target_page)
         page.update()
+
 
     # Fonction pour jouer un son
     def play_sound(sound):
@@ -103,28 +121,30 @@ def main(page: ft.Page):
     pick_files_dialog = ft.FilePicker(
         on_result=pick_files_result
     )
-    # function if a song is available to be create
-    def validate_and_add_song(_):
-        if not sound_name_input.value.strip():
-            statuscreate.value = "Le nom du son est obligatoire."
-            statuscreate.color = "red"
-            statuscreate.update()
-            return
-        if selected_song_file.value == "Aucun fichier sélectionné":
-            statuscreate.value = "Veuillez sélectionner un fichier audio."
-            statuscreate.color = "red"
-            statuscreate.update()
-            return
-        # Si tout est valide, appelez la fonction pour ajouter le son
-        api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
-        statuscreate.value = "Son ajouté avec succès !"
-        statuscreate.color = "green"
+    def set_status_message(msg, color):
+        statuscreate.value = msg
+        statuscreate.color = color
+        statuscreate.update()
+    
+    def reset_form_fields():
         sound_name_input.value = ""
         selected_song_file.value = ""
         selected_image_file.value = ""
         sound_name_input.update()
         selected_song_file.update()
         selected_image_file.update()
+    
+    def on_add_song_button_click(_):
+        if not sound_name_input.value.strip():
+            set_status_message("Le nom du son est obligatoire.", "red")
+            return
+        if selected_song_file.value == "Aucun fichier sélectionné":
+            set_status_message("Veuillez sélectionner un fichier audio.", "red")
+            return
+        api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
+        set_status_message("Son ajouté avec succès !", "green")
+        reset_form_fields()
+
 
         statuscreate.update()
     # function to refresh the songs list
@@ -159,7 +179,7 @@ def main(page: ft.Page):
                                     data="song_settings",
                                     icon_size=20,
                                     visible=(not delete_mode),
-                                    on_click=lambda e, s=sound: change_Page(e, s),
+                                    on_click=lambda e, s=sound: change_page(e, s),
                                     tooltip="Paramètres du son",
                                 ),
                                 # Bouton corbeille visible uniquement en mode suppression
@@ -217,7 +237,7 @@ def main(page: ft.Page):
                     height=50,
                 ),
                 data="Accueil",  # Identifiant pour l'image
-                on_tap=change_Page,
+                on_tap=change_page,
             ),
             ft.GestureDetector(
                 content=ft.Image(
@@ -226,7 +246,7 @@ def main(page: ft.Page):
                     height=30,
                 ),
                 data="Paramètres",  # Identifiant pour l'image
-                on_tap=change_Page,
+                on_tap=change_page,
             ),
         ],
         alignment=ft.MainAxisAlignment.START,
@@ -253,7 +273,7 @@ def main(page: ft.Page):
                         ft.ElevatedButton(
                             text="Ajouter",
                             data="Ajouter",
-                            on_click=change_Page,
+                            on_click=change_page,
                             style=ft.ButtonStyle(
                                 padding=ft.Padding(10, 10, 10, 10),
                             ),
@@ -304,7 +324,7 @@ def main(page: ft.Page):
                                     data="song_settings",
                                     icon_size=20,
                                     visible=(not delete_mode),  # Affiche uniquement si delete_mode est False),
-                                    on_click=change_Page,
+                                    on_click=lambda e, s=sound: change_page(e, s),
                                     tooltip="Nope",
                                 ),
                                 ft.IconButton(
@@ -427,7 +447,7 @@ def main(page: ft.Page):
             ),
         ),
         selected_image_file,
-        ft.ElevatedButton(text="Ajouter", on_click=validate_and_add_song),
+        ft.ElevatedButton(text="Ajouter", on_click=on_add_song_button_click),
         statuscreate
     ]
     
@@ -436,19 +456,81 @@ def main(page: ft.Page):
     #                           Song Settings Page
     # ---------------------------------------------------------------------------------------------
     song_settings_title = ft.Text(
-                                "Paramètres du song",
-                                style=ft.TextStyle(
-                                    size=24,
-                                    weight=ft.FontWeight.BOLD,
-                                    color='blue',
-                                ),
-                            )
+    "Song Settings",
+    style=ft.TextStyle(
+        size=24,
+        weight=ft.FontWeight.BOLD,
+        color="blue",
+    ),
+    text_align=ft.TextAlign.CENTER,  # Centrer le titre
+    )
+
+    # Nom de la chanson centré
+    song_name_display = ft.Text(
+    "Song Name Example",  # Remplace dynamiquement si nécessaire
+    style=ft.TextStyle(size=30, weight=ft.FontWeight.BOLD, ),
+    text_align=ft.TextAlign.CENTER,
+)
+    
+    volume_settings_title = ft.Text(
+    "Volume",
+    style=ft.TextStyle(
+        size=20,
+    )
+    )
+
+    centered_song_name = ft.Row(
+        [song_name_display],
+        alignment=ft.MainAxisAlignment.CENTER
+    )
+    
+    song_image = ft.Image(
+        src="img_path",  # Remplacez par le chemin de votre image
+        width=200,
+        height=200,
+        fit=ft.ImageFit.CONTAIN,
+    )
+
+
+# Définir une fonction qui met à jour le label du slider
+    def update_slider_label(e):
+        volume_slider.label = f'{int(volume_slider.value)}%'
+        volume_slider.update()
+
+    # Créer d'abord l'objet sans utiliser sa propre valeur dans le label
+    volume_slider = ft.Slider(
+        min=0,
+        max=100,
+        value=50,
+        divisions=100,
+        on_change=update_slider_label,
+    )
+
+    # Initialiser manuellement le label après création
+    volume_slider.label = f'{int(volume_slider.value)}%'
+
+
+
+    # Saisie clavier
+    keyboard_input = ft.TextField(
+        label="Keyboard Input",
+        hint_text="Enter a key...",
+    )
+
     song_settings_container.controls = [
         song_settings_title,
+        centered_song_name,
+        ft.Row(
+            controls=[song_image],
+            alignment=ft.MainAxisAlignment.CENTER
+        ),
+        volume_settings_title,
+        volume_slider,
+        keyboard_input,
+        ft.Switch(label="Enable Option"),
         ft.ElevatedButton(text="Save"),
-                ft.Switch(label="Activer une option"),
-                ft.Slider(label="Volume", min=0, max=100, value=50),
-            ]
+    ]
+
 
 
     # ---------------------------------------------------------------------------------------------
