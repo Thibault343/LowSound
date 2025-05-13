@@ -155,7 +155,9 @@ def createNewSong(songName, songPath, imagePath):
         new_song = {
             "name": songName,
             "src": songPath if os.path.isfile(songPath) else "",
-            "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png"
+            "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png",
+            "volume": 0.5,
+            "shortcut": ""
         }
 
         # Read existing songs and append the new one
@@ -172,7 +174,6 @@ def createNewSong(songName, songPath, imagePath):
             json.dump(sounds, file, indent=4)
         
             
-
 
     
 

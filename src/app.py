@@ -76,12 +76,9 @@ def main(page: ft.Page):
                 add_song_container.visible = True
             elif page_name == "song_settings":
                 song_settings_container.visible = True
-                print("Sound reçu :", sound)  # ← ajoute cette ligne
                 if sound is not None:
                         selected_song_settings = sound
-                        print(f"voici le settings : {selected_song_settings}")
                         img_path = selected_song_settings.get("img", "")  # éviter une exception si la clé n'existe pas
-                        print('voici le img_path : ', img_path)
                         song_name_display.value = f"{selected_song_settings['name']}"
                         song_image.src = img_path  # Met à jour l’image dynamiquement
                         song_image.update()
@@ -96,7 +93,6 @@ def main(page: ft.Page):
     # Fonction pour jouer un son
     def play_sound(sound):
         selected_sound = sound['src']
-        print(f"Playing sound: {sound['name']}")
         api.play_sound(selected_sound, dropdown_device.value)
 
     # Fuction to pick a file
@@ -114,7 +110,6 @@ def main(page: ft.Page):
                 selected_image_file.value = os.path.relpath(e.files[0].path, start=os.getcwd())
         else:
             selected_song_file.value = "Aucun fichier sélectionné"
-            print("Aucun fichier sélectionné")
         selected_song_file.update()  # Met à jour l'affichage du texte
         selected_image_file.update()
 
@@ -504,18 +499,47 @@ def main(page: ft.Page):
         value=50,
         divisions=100,
         on_change=update_slider_label,
-    )
+    ) 
 
     # Initialiser manuellement le label après création
     volume_slider.label = f'{int(volume_slider.value)}%'
 
-
+    keybind_active = False  # Suivre si on est en mode saisie
 
     # Saisie clavier
-    keyboard_input = ft.TextField(
-        label="Keyboard Input",
-        hint_text="Enter a key...",
+    keybind_input = ft.TextField(
+        label="Keybind",
+        read_only=True,
+        on_focus=lambda e: activate_keybind(True),
+        on_blur=lambda e: activate_keybind(False),
+
     )
+    def activate_keybind(state: bool):
+        nonlocal keybind_active
+        keybind_active = state
+        if state:
+            keybind_input.value = "Press a key..."
+        else:
+            if keybind_input.value == "Press a key...":
+                keybind_input.value = ""
+        keybind_input.update()
+
+
+    def on_key_press(e: ft.KeyboardEvent):
+        if keybind_active:
+            # On peut construire la combinaison de touches ici
+            combo = []
+            if e.ctrl:
+                combo.append("Ctrl")
+            if e.alt:
+                combo.append("Alt")
+            if e.shift:
+                combo.append("Shift")
+            combo.append(e.key)  # Ajoute la touche principale
+            keybind_input.value = " + ".join(combo)
+            keybind_input.update()
+
+    page.on_keyboard_event = on_key_press
 
     song_settings_container.controls = [
         song_settings_title,
@@ -524,10 +548,10 @@ def main(page: ft.Page):
             controls=[song_image],
             alignment=ft.MainAxisAlignment.CENTER
         ),
+        ft.Divider(),
         volume_settings_title,
         volume_slider,
-        keyboard_input,
-        ft.Switch(label="Enable Option"),
+        keybind_input,
         ft.ElevatedButton(text="Save"),
     ]
 
