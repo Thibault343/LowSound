@@ -53,7 +53,6 @@ def delete_song_from_json(e):
     # Remove the sound file from storage
     os.remove(e["src"])
     os.remove(e["img"])
-
 # Play a sound on the selected output device
 def play_sound(sound, selected_device, volume):
     volume = volume / 100.0
@@ -152,7 +151,7 @@ def createNewSong(songName, songPath, imagePath):
             "name": songName,
             "src": songPath if os.path.isfile(songPath) else "",
             "img": imagePath if os.path.isfile(imagePath) else "../assets/icon2.png",
-            "volume": 0.5,
+            "volume": 50,
             "shortcut": ""
         }
 

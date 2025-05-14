@@ -79,6 +79,8 @@ def main(page: ft.Page):
                         selected_song_settings = sound
                         img_path = selected_song_settings.get("img", "")  # éviter une exception si la clé n'existe pas
                         song_name_display.value = f"{selected_song_settings['name']}"
+                        volume_slider.value = f"{selected_song_settings['volume']}"
+                        keybind_input.value = f"{selected_song_settings['shortcut']}"
                         song_image.src = img_path  # Met à jour l’image dynamiquement
                         song_image.update()
 
