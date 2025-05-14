@@ -151,7 +151,6 @@ def main(page: ft.Page):
         with open("storage/data/sounds.json", "r") as file:
             sounds_list = json.load(file)
         sounds_list = [sound for sound in sounds_list if sound['src'] != ""]  # Filtrer les sons sans chemin valide
-
         # Mettre à jour la liste des sons
         home_container.controls[1] = ft.Column(
             [
@@ -606,9 +605,5 @@ def main(page: ft.Page):
     )
     preloading.load_settings_page(dropdown_device, dropdown_default_theme)
     
+
 ft.app(main)
-
-
-
-
-
