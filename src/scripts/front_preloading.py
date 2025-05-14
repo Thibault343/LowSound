@@ -3,7 +3,7 @@
 # It initializes loads the settings.
 #***************************************************
 import json
-import flet
+import flet as ft
 import os
 
 
@@ -12,7 +12,6 @@ def load_settings():
         with open("storage\data\settings.json", "r") as f:
                 settings = json.load(f)
         
-        print(settings)
         return settings
     except FileNotFoundError:
         print("Settings file not found. Using default settings.")
@@ -52,3 +51,4 @@ def get_theme_list():
     except FileNotFoundError:
         print(f"Directory {theme_dir} not found.")
         return []
+    

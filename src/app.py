@@ -2,7 +2,6 @@ import flet as ft
 from scripts import api
 from scripts.api import delete_song_from_json
 from scripts.api import saved_settings
-from scripts.api import pause_and_play
 from scripts import front_preloading as preloading
 import json
 import os
@@ -93,7 +92,9 @@ def main(page: ft.Page):
     # Fonction pour jouer un son
     def play_sound(sound):
         selected_sound = sound['src']
-        api.play_sound(selected_sound, dropdown_device.value)
+        selected_volume = sound['volume']
+        selected_device = dropdown_device.value
+        api.play_sound(selected_sound, selected_device, selected_volume)
 
     # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
@@ -552,7 +553,7 @@ def main(page: ft.Page):
         volume_settings_title,
         volume_slider,
         keybind_input,
-        ft.ElevatedButton(text="Save"),
+        ft.ElevatedButton(text="Save", on_click=lambda _: api.modify_settings_song(selected_song_settings['name'], volume_slider.value, keybind_input.value)),
     ]
 
 
@@ -563,7 +564,7 @@ def main(page: ft.Page):
     stopAndPlayButton = ft.IconButton(
         icon=ft.Icons.STOP,
         tooltip="Arrêter",
-        on_click=lambda _: pause_and_play(),
+        on_click=lambda _: api.stop_play(),
     )
 
     # Barre en bas avec les boutons Arrêter et Pause

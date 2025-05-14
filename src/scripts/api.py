@@ -55,13 +55,16 @@ def delete_song_from_json(e):
     os.remove(e["img"])
 
 # Play a sound on the selected output device
-def play_sound(sound, selected_device):
+def play_sound(sound, selected_device, volume):
+    volume = volume / 100.0
+    
     device_name = selected_device  # Already a string
     device_info = next((d for d in sd.query_devices() if d['name'] == device_name), None)
     if device_info:
         try:
             file_path = f"./{sound}"
             data, samplerate = sf.read(file_path)
+            data = data * volume
             sd.play(data, samplerate=samplerate, device=device_info['name'])
         except Exception as e:
             print(f"Error playing sound: {e}")
@@ -69,7 +72,7 @@ def play_sound(sound, selected_device):
         print("Selected device not found.")
 
 # Pause or resume sound playback
-def pause_and_play():
+def stop_play():
     """
     Pauses or resumes playback depending on the current state.
     """
@@ -79,13 +82,6 @@ def pause_and_play():
     except Exception as e:
         print(f"Error pausing playback: {e}")
 
-# Stop sound playback
-def stop_sound():
-    try:
-        sd.stop()
-        print("Playback stopped.")
-    except Exception as e:
-        print(f"Error stopping sound: {e}")
 
 # Entry point to list all output devices
 def main():
@@ -175,6 +171,30 @@ def createNewSong(songName, songPath, imagePath):
         
             
 
+import json
+
+def modify_settings_song(name, volume, shortcut):
+    with open("storage/data/sounds.json", "r") as f:
+        sounds = json.load(f)
+
+    found = False
+    for sound in sounds:
+        if sound["name"] == name:
+            print(f"🔧 Modification de : {name}")
+            sound["volume"] = volume
+            sound["shortcut"] = shortcut
+            found = True
+            break
+
+    if not found:
+        print(f"❌ Aucun son trouvé avec le nom : {name}")
+    else:
+        with open("storage/data/sounds.json", "w") as f:
+            json.dump(sounds, f, indent=4)
+        print("✅ Données de mises à jour")
+
+
+        
     
 
                 
