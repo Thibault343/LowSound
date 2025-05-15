@@ -1,15 +1,13 @@
 import flet as ft
-from scripts import api
-from scripts.api import delete_song_from_json
-from scripts.api import saved_settings
-from scripts import front_preloading as preloading
+from modules import device, sound_manager, audio, settings_manager, frontend_loader
+
 import json
 import os
 
 # init
-devices_list = api.get_output_devices() #Get the devices list
-sounds_list = api.list_sounds("", False) # Get the sounds list
-themes_list = preloading.get_theme_list() # Get the  themes list
+devices_list = device.get_output_devices() #Get the devices list
+sounds_list = sound_manager.list_sounds() # Get the sounds list
+themes_list = frontend_loader.get_theme_list() # Get the  themes list
 max_sounds_per_row = 7 # max button per row 
 
 selected_song_settings = {}
@@ -18,26 +16,24 @@ selected_song_settings = {}
 
 # main app
 def main(page: ft.Page):
-
-
     # apply settings to the app
     def apply_settings(device, theme):
-        settings = preloading.load_settings()
+        settings = frontend_loader.load_settings()
         if theme != settings["default_theme"]:
             #apply theme
             load_theme(theme)
             page.update()
             # saved settings in the json
-            saved_settings(device, theme)
+            settings_manager.save_settings(device, theme)
         if device != settings["device"]:
-            saved_settings(device,theme)
+            settings_manager.save_settings(device,theme)
 
     # load a theme
-    def load_theme(theme_name) : 
+    def load_theme(theme_name) :
         if theme_name == "":
-            theme = preloading.get_theme_colors(None)
+            theme = frontend_loader.get_theme_colors(None)
         else: 
-            theme = preloading.get_theme_colors(theme_name)
+            theme = frontend_loader.get_theme_colors(theme_name)
         # Convertir le dictionnaire color_scheme en ft.ColorScheme
         color_scheme = ft.ColorScheme(**theme['color_scheme'])
 
@@ -96,7 +92,7 @@ def main(page: ft.Page):
         selected_sound = sound['src']
         selected_volume = sound['volume']
         selected_device = dropdown_device.value
-        api.play_sound(selected_sound, selected_device, selected_volume)
+        audio.play_sound(selected_sound, selected_device, selected_volume)
 
     # Fuction to pick a file
     def pick_files_result(e: ft.FilePickerResultEvent):
@@ -139,7 +135,7 @@ def main(page: ft.Page):
         if selected_song_file.value == "Aucun fichier sélectionné":
             set_status_message("Veuillez sélectionner un fichier audio.", "red")
             return
-        api.createNewSong(sound_name_input.value, selected_song_file.value, selected_image_file.value)
+        sound_manager.create_new_song(sound_name_input.value, selected_song_file.value, selected_image_file.value)
         set_status_message("Son ajouté avec succès !", "green")
         reset_form_fields()
 
@@ -148,7 +144,7 @@ def main(page: ft.Page):
     # function to refresh the songs list
     def refresh_sounds_list(_):
         global sounds_list
-        with open("storage/data/sounds.json", "r") as file:
+        with open("data/sounds.json", "r") as file:
             sounds_list = json.load(file)
         sounds_list = [sound for sound in sounds_list if sound['src'] != ""]  # Filtrer les sons sans chemin valide
         # Mettre à jour la liste des sons
@@ -203,7 +199,7 @@ def main(page: ft.Page):
     # Setup delete function
     delete_mode = False
     def delete_songs(e) :
-        delete_song_from_json(e)
+        sound_manager.delete_song_from_json(e)
         page.update()
         refresh_sounds_list(None)  # Met à jour la liste des sons
     
@@ -229,16 +225,16 @@ def main(page: ft.Page):
         [
             ft.GestureDetector(
                 content=ft.Image(
-                    src="../assets/icon.png",  # Image pour "Accueil"
-                    width=50,
-                    height=50,
+                    src="assets/favicon.png",  # Image pour "Accueil"
+                    width=70,
+                    height=70,
                 ),
                 data="Accueil",  # Identifiant pour l'image
                 on_tap=change_page,
             ),
             ft.GestureDetector(
                 content=ft.Image(
-                    src="../assets/settings.png",  # Image pour "Paramètres"
+                    src="assets/settings.png",  # Image pour "Paramètres"
                     width=30,
                     height=30,
                 ),
@@ -554,7 +550,7 @@ def main(page: ft.Page):
         volume_settings_title,
         volume_slider,
         keybind_input,
-        ft.ElevatedButton(text="Save", on_click=lambda _: api.modify_settings_song(selected_song_settings['name'], volume_slider.value, keybind_input.value)),
+        ft.ElevatedButton(text="Save", on_click=lambda _: sound_manager.modify_settings_song(selected_song_settings['name'], volume_slider.value, keybind_input.value)),
     ]
 
 
@@ -565,7 +561,7 @@ def main(page: ft.Page):
     stopAndPlayButton = ft.IconButton(
         icon=ft.Icons.STOP,
         tooltip="Arrêter",
-        on_click=lambda _: api.stop_play(),
+        on_click=lambda _: audio.stop_play(),
     )
 
     # Barre en bas avec les boutons Arrêter et Pause
@@ -603,7 +599,7 @@ def main(page: ft.Page):
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Place le contenu en haut et en bas
         )
     )
-    preloading.load_settings_page(dropdown_device, dropdown_default_theme)
+    frontend_loader.load_settings_page(dropdown_device, dropdown_default_theme)
     
 
 ft.app(main)

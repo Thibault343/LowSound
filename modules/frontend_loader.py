@@ -9,7 +9,7 @@ import os
 
 def load_settings():
     try:
-        with open("storage\data\settings.json", "r") as f:
+        with open("data/settings.json", "r") as f:
                 settings = json.load(f)
         
         return settings
@@ -28,12 +28,13 @@ def load_settings_page(dropdown_device, dropdown_default_theme):
 
 def get_theme_colors(theme):
     global settings
+    
     if theme == None:
         theme_name = settings.get("default_theme")  # Utiliser "default_theme" par défaut
     else: 
         theme_name = theme.value
     try:
-        with open(f"storage/data/themes/{theme_name}.json", "r") as f:
+        with open(f"data/themes/{theme_name}.json", "r") as f:
             default_theme = json.load(f)
             return default_theme
     except FileNotFoundError:
@@ -42,7 +43,7 @@ def get_theme_colors(theme):
 # load the theme list for the dropdown
 def get_theme_list():
     theme_list = []
-    theme_dir = "storage/data/themes"
+    theme_dir = "data/themes"
     try:
         for file_name in os.listdir(theme_dir):
             if file_name.endswith(".json"):
