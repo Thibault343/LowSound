@@ -1,5 +1,7 @@
 # LowSound
 
+![Logo](./ReadMeFiles/banner.jpg)
+
 ## What is it ?
 
 LowSound is a simple soundboard you can use to play some sound in ur microphone.
@@ -28,8 +30,10 @@ One external app:
 -   [VB CABLE](https://vb-audio.com/Cable/)
 
 ### Download the project
+
 Download the project with git or by zip.
 zip: [download](https://github.com/Thibault343/LowSound/archive/refs/heads/main.zip)
+
 ### Installing packages
 
 ```python
