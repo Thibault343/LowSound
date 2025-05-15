@@ -60,4 +60,4 @@ Go to [Download](https://vb-audio.com/Cable/)
 
 ## Licenses
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [APACHE 2.0](LICENSE).
