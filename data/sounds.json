@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "name": "Hello",
+        "src": "storage/sounds/Hello.mp3",
+        "img": "storage/images/Hello.png",
+        "volume": 28.999999999999996,
+        "shortcut": "Ctrl + F"
+    }
+]
