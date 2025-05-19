@@ -1,0 +1,18 @@
+{
+    "color_scheme": {
+        "primary": "#000000",
+        "primary_container": "#BBDEFB",
+        "secondary": "#4CAF50",
+        "secondary_container": "#C8E6C9",
+        "background": "#213448",
+        "surface": "#FFFFFF",
+        "error": "#FF0000",
+        "on_primary": "#FFFFFF",
+        "on_secondary": "#000000",
+        "on_surface": "#FFFFFF",
+        "on_background": "#FFFFFF",
+        "on_error": "#FFFFFF"
+    },
+    "page_bgcolor": "#213448",
+    "theme_mode": "dark"
+}
