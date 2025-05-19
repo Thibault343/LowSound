@@ -1,17 +1,27 @@
-#------------------------------------------------
-# Author : AkameSayte
-# Date : 16 mai 2025
-#------------------------------------------------
 import flet as ft
 from modules import sound_manager
 import os
 
+# ------------------------------------------------
+# Function: build
+# Arguments:
+#   - container: The UI container where the elements will be added.
+#   - change_page_fn: Callback function to handle page changes.
+# Description:
+#   Builds the UI for adding a new sound, including:
+#   - A status text placeholder.
+#   - A text field for entering the sound's name.
+#   - Text fields displaying the selected song file and image file paths.
+#   - A file picker component to select audio (.mp3) and image (.jpg, .png, .jpeg) files.
+#   When a file is picked, updates the corresponding text fields with the relative file path.
+# ------------------------------------------------
 def build(container, change_page_fn):
     status_text = ft.Text()
-    name_input = ft.TextField(label="Nom du son")
-    song_file = ft.Text(value="Aucun fichier sélectionné")
-    img_file = ft.Text(value="Aucune image sélectionnée")
+    name_input = ft.TextField(label="Sound name")
+    song_file = ft.Text(value="No file selected")
+    img_file = ft.Text(value="No image selected")
     file_picker = ft.FilePicker()
+    print("Loading page : Add song ")
 
     def on_file_pick(e: ft.FilePickerResultEvent):
         if e.files:
@@ -25,23 +35,26 @@ def build(container, change_page_fn):
     file_picker.on_result = on_file_pick
 
     def add_song(_):
-        if not name_input.value.strip() or song_file.value == "Aucun fichier sélectionné":
-            status_text.value = "Nom ou son manquant"
+        if not name_input.value.strip() or song_file.value == "No file selected":
+            status_text.value = "Missing name or sound file"
+            status_text.color = "red"
             return
         sound_manager.create_new_song(name_input.value, song_file.value, img_file.value)
-        status_text.value = "Ajouté avec succès"
-        name_input.value, song_file.value, img_file.value = "", "", "Aucun fichier sélectionné"
+        status_text.value = "Successfully added"
+        status_text.color = "green"
+        name_input.value, song_file.value, img_file.value = "", "No file selected", "No image selected"
         container.update()
-
+    
     container.controls.clear()
     container.controls.extend([
         file_picker,
-        ft.Text("Ajouter un son"),
+        ft.Text("Add a sound"),
         name_input,
-        ft.ElevatedButton("Choisir un fichier audio", on_click=lambda _: file_picker.pick_files(allowed_extensions=["mp3"])),
+        ft.ElevatedButton("Choose an audio file", on_click=lambda _: file_picker.pick_files(allowed_extensions=["mp3"])),
         song_file,
-        ft.ElevatedButton("Choisir une image", on_click=lambda _: file_picker.pick_files(allowed_extensions=["jpg", "png", "jpeg"])),
+        ft.ElevatedButton("Choose an image", on_click=lambda _: file_picker.pick_files(allowed_extensions=["jpg", "png", "jpeg"])),
         img_file,
-        ft.ElevatedButton("Ajouter", on_click=add_song),
+        ft.ElevatedButton("Add", on_click=add_song),
         status_text
     ])
+    

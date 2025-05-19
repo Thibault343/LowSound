@@ -1,7 +1,3 @@
-
-#   <--|========>
-
-
 import flet as ft
 from modules import sound_manager
 
@@ -10,6 +6,7 @@ from modules import sound_manager
 # - Autodetect and select mode when a user can select a shortcut
 # - limit the shortcut possiblity
 #------------------------------------------------
+
 
 keybind_active = False
 
@@ -20,8 +17,15 @@ keybind_input = ft.TextField(
     on_blur=lambda e: activate_keybind(False),
 
 )
-
-def activate_keybind(state: bool):
+# ------------------------------------------------
+# Function: activate_keybind
+# Arguments:
+#   - state (bool): If True, enables key input mode for setting a keybind.
+# Description:
+#   Toggles keybind input mode by updating the input field accordingly.
+#   When active, prompts the user to press a key.
+# ------------------------------------------------
+def activate_keybind(state: bool, container):
     global keybind_active
     keybind_active = state
     if state:
@@ -31,10 +35,20 @@ def activate_keybind(state: bool):
             keybind_input.value = ""
     keybind_input.update()
 
+# ------------------------------------------------
+# Function: on_key_press
+# Arguments:
+#   - e (ft.KeyboardEvent): The keyboard event triggered by a key press.
+# Description:
+#   If keybind input mode is active, constructs and displays the key combination
+#   (e.g., Ctrl + Shift + A) based on the pressed keys.
+# ------------------------------------------------
+INVALID_KEYS = ["Escape", "Tab", "Enter", "CapsLock"]
 
 def on_key_press(e: ft.KeyboardEvent):
     if keybind_active:
-        # On peut construire la combinaison de touches ici
+        if e.key in INVALID_KEYS:
+            return  # Ignore unwanted keys
         combo = []
         if e.ctrl:
             combo.append("Ctrl")
@@ -42,49 +56,58 @@ def on_key_press(e: ft.KeyboardEvent):
             combo.append("Alt")
         if e.shift:
             combo.append("Shift")
-        combo.append(e.key)  # Ajoute la touche principale
+        combo.append(e.key)
         keybind_input.value = " + ".join(combo)
         keybind_input.update()
 
-#------------------------------------------------
-#   **     Load song settings     **
-# Arguments Taked: container and the actualy selected sound
-# DO :  - Create title and use sounds settings to add the song name,
-#       - Create a image with src the sound image
-#------------------------------------------------
+
+
+
+
+# ------------------------------------------------
+# Function: load_song_settings
+# Arguments:
+#   - container: The UI container where the settings will be displayed.
+#   - sound (dict): The selected sound with its properties (name, image, volume, shortcut).
+# Description:
+#   Clears the container and displays the UI elements for editing a sound's settings:
+#   name, image, volume slider, keyboard shortcut input, and save button.
+# ------------------------------------------------
 
 def load_song_settings(container, sound):
     container.controls.clear()
-    print(sound)
+
+    # Create title and sound image
     name = ft.Text(sound['name'], size=24, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
     img = ft.Image(src=sound['img'], width=200, height=200)
 
-    volume_slider = ft.Slider(min=0, max=100, value=sound['volume'], label=f"{sound['volume']}%", divisions=100)
-    keybind_input.value = f'{sound['shortcut']}'
+    # Create volume slider with label
+    volume_slider = ft.Slider(
+        min=0,
+        max=100,
+        value=sound['volume'],
+        label=f"{sound['volume']}%",
+        divisions=100
+    )
 
-    # Saisie clavier
-
-
-
-    container.controls.clear()
-    
+    # Update the label when slider is moved
     def update_label(e):
         volume_slider.label = f"{int(e.control.value)}%"
         container.update()
-    
-
 
     volume_slider.on_change = update_label
+
+    # Set the shortcut value into the input field
+    keybind_input.value = sound['shortcut']
+
+    # Add all controls to the container
     container.controls.append(
         ft.Column(
             [
                 ft.Row(
                     [
                         ft.Column(
-                            [
-                                name,
-                                img
-                            ],
+                            [name, img],
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                             alignment=ft.MainAxisAlignment.CENTER
                         )
@@ -94,9 +117,16 @@ def load_song_settings(container, sound):
                 ),
                 ft.Text("Volume"),
                 volume_slider,
-                ft.Text("Raccourci clavier"),
+                ft.Text("Keyboard Shortcut"),
                 keybind_input,
-                ft.ElevatedButton(text="Save", on_click=lambda _: sound_manager.modify_settings_song(sound['name'], volume_slider.value, keybind_input.value)),
-            ],
+                ft.ElevatedButton(
+                    text="Save",
+                    on_click=lambda _: sound_manager.modify_settings_song(
+                        sound['name'], volume_slider.value, keybind_input.value
+                    )
+                ),
+            ]
         )
     )
+    print("Loading page : Song Settings ")
+
