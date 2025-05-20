@@ -3,8 +3,8 @@ from modules import sound_manager
 
 #------------------------------------------------
 #   **     keybind input management     **
-# - Autodetect and select mode when a user can select a shortcut
-# - limit the shortcut possiblity
+# - Autodetect and select mode when a user can select a keybind
+# - limit the keybind possiblity
 #------------------------------------------------
 
 
@@ -25,7 +25,7 @@ keybind_input = ft.TextField(
 #   Toggles keybind input mode by updating the input field accordingly.
 #   When active, prompts the user to press a key.
 # ------------------------------------------------
-def activate_keybind(state: bool, container):
+def activate_keybind(state: bool):
     global keybind_active
     keybind_active = state
     if state:
@@ -68,10 +68,10 @@ def on_key_press(e: ft.KeyboardEvent):
 # Function: load_song_settings
 # Arguments:
 #   - container: The UI container where the settings will be displayed.
-#   - sound (dict): The selected sound with its properties (name, image, volume, shortcut).
+#   - sound (dict): The selected sound with its properties (name, image, volume, keybind).
 # Description:
 #   Clears the container and displays the UI elements for editing a sound's settings:
-#   name, image, volume slider, keyboard shortcut input, and save button.
+#   name, image, volume slider, keyboard keybind input, and save button.
 # ------------------------------------------------
 
 def load_song_settings(container, sound):
@@ -97,8 +97,8 @@ def load_song_settings(container, sound):
 
     volume_slider.on_change = update_label
 
-    # Set the shortcut value into the input field
-    keybind_input.value = sound['shortcut']
+    # Set the keybind value into the input field
+    keybind_input.value = sound['keybind']
 
     # Add all controls to the container
     container.controls.append(
@@ -117,7 +117,7 @@ def load_song_settings(container, sound):
                 ),
                 ft.Text("Volume"),
                 volume_slider,
-                ft.Text("Keyboard Shortcut"),
+                ft.Text("Keyboard keybind"),
                 keybind_input,
                 ft.ElevatedButton(
                     text="Save",

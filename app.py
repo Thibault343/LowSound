@@ -111,4 +111,3 @@ def main(page: ft.Page):
     home.refresh_sounds_list(home_container, play_sound, change_page)
 
 ft.app(target=main)
-3

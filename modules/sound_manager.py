@@ -60,7 +60,7 @@ def delete_song_from_json(e):
 # Description:
 #   Creates a new sound entry by copying the audio and image files
 #   to the designated storage folders with unique filenames to avoid overwriting.
-#   Adds the new sound entry to 'sounds.json' with default volume and shortcut values.
+#   Adds the new sound entry to 'sounds.json' with default volume and keybind values.
 #   Handles cases where the image is not selected or filenames conflict.
 # ------------------------------------------------
 def create_new_song(songName, songPath, imagePath):
@@ -119,7 +119,7 @@ def create_new_song(songName, songPath, imagePath):
         "src": songPath,
         "img": imagePath,
         "volume": 50,      # Default volume
-        "shortcut": ""     # Default empty shortcut
+        "keybind": ""     # Default empty keybind
     }
 
     # Load the existing list of sounds from the JSON file or create an empty list if file not found
@@ -144,21 +144,21 @@ def create_new_song(songName, songPath, imagePath):
 # Arguments:
 #   - name (str): The name of the sound to modify.
 #   - volume (int): The new volume value (0-100).
-#   - shortcut (str): The new keyboard shortcut for the sound.
+#   - keybind (str): The new keyboard keybind for the sound.
 # Description:
 #   Loads the list of sounds from 'sounds.json', updates the
-#   volume and shortcut of the sound matching the given name,
+#   volume and keybind of the sound matching the given name,
 #   then saves the updated list back to the JSON file.
 #   If no matching sound is found, prints an error message.
 # ------------------------------------------------
-def modify_settings_song(name, volume, shortcut):
+def modify_settings_song(name, volume, keybind):
     with open("data/sounds.json", "r") as f:
         sounds = json.load(f)
 
     for sound in sounds:
         if sound["name"] == name:
             sound["volume"] = volume
-            sound["shortcut"] = shortcut
+            sound["keybind"] = keybind
             break
     else:
         print(f"❌ Aucun son trouvé avec le nom : {name}")
