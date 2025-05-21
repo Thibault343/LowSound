@@ -5,5 +5,19 @@
         "img": "storage/images/Hello.png",
         "volume": 81.0,
         "keybind": "Alt + Shift + A"
+    },
+    {
+        "name": "dsadas",
+        "src": "storage/sounds/dsadas.mp3",
+        "img": "storage/images/dsadas.png",
+        "volume": 50,
+        "keybind": ""
+    },
+    {
+        "name": "asda",
+        "src": "storage/sounds/asda.mp3",
+        "img": "assets/icon2.png",
+        "volume": 50,
+        "keybind": ""
     }
 ]
