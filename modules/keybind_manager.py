@@ -3,37 +3,55 @@ import time
 from modules import audio, sound_manager
 from modules.frontend_loader import settings
 
-
 sounds = sound_manager.list_sounds()
 print(sounds)
 current_keys = set()
 last_combo = None
 last_time = 0
 COOLDOWN_SECONDS = 3
-# Charge ton JSON et prépare les keybinds sous forme triée
+
+# ------------------------------------------------
+# Function: load_keybinds
+# Arguments: None
+# Description:
+#   Loads keybinds from the list of sounds.
+#   Normalizes and sorts key combinations for consistent matching.
+# Returns:
+#   A dictionary mapping normalized key combinations to their corresponding sound.
+# ------------------------------------------------
 def load_keybinds():
     keybind_map = {}
-
     for sound in sounds:
         keybind = sound.get("keybind")
         if keybind:
-            # Normaliser et trier les touches
             keys = [k.strip().title() for k in keybind.split("+")]
             key_combo = " + ".join(sorted(keys))
             keybind_map[key_combo] = sound
-
     return keybind_map
 
-
+# ------------------------------------------------
+# Function: pre_play_sound
+# Arguments: combo (string)
+# Description:
+#   Plays the sound associated with the given key combination if it exists.
+#   Uses the device and volume settings from the global settings.
+# Returns:
+#   None
+# ------------------------------------------------
 def pre_play_sound(combo):
     global settings
     keybinds = load_keybinds()
     if combo in keybinds:
         audio.play_sound(keybinds[combo]['src'], settings['device'], keybinds[combo]['volume'])
 
-
-
-# Pour normaliser les noms de touches
+# ------------------------------------------------
+# Function: normalize_key
+# Arguments: key (string)
+# Description:
+#   Normalizes key names to ensure consistent keybind matching.
+# Returns:
+#   Normalized key name (string)
+# ------------------------------------------------
 def normalize_key(key):
     key_map = {
         'alt_l': 'Alt',
@@ -47,11 +65,18 @@ def normalize_key(key):
     }
     return key_map.get(key.lower(), key.upper())
 
-
 keybind_map = load_keybinds()
-current_keys = set()  # déplacé ici pour visibilité globale
+current_keys = set()
 
-
+# ------------------------------------------------
+# Function: on_press
+# Arguments: key (Key)
+# Description:
+#   Adds the pressed key to the current set of keys.
+#   Checks if the current key combination matches any defined keybind.
+# Returns:
+#   None
+# ------------------------------------------------
 def on_press(key):
     print("PRESSED")
     try:
@@ -70,7 +95,15 @@ def on_press(key):
         pre_play_sound(combo)
         print(f"✅ Shortcut matched: {combo}")
 
-
+# ------------------------------------------------
+# Function: on_release
+# Arguments: key (Key)
+# Description:
+#   Removes the released key from the current set of keys.
+#   Stops the listener if the Delete key is released.
+# Returns:
+#   False to stop the listener if Delete key is released; otherwise None
+# ------------------------------------------------
 def on_release(key):
     try:
         if hasattr(key, 'char') and key.char:
@@ -86,5 +119,3 @@ def on_release(key):
 
     normalized = normalize_key(k)
     current_keys.discard(normalized)
-
-
