@@ -18,6 +18,6 @@
         "src": "storage/sounds/asda.mp3",
         "img": "assets/icon2.png",
         "volume": 50,
-        "keybind": ""
+        "keybind": "Alt + Shift + Q"
     }
 ]

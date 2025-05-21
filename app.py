@@ -1,6 +1,7 @@
 import flet as ft
 from views import home, settings, add_song, song_settings
-from modules import frontend_loader, settings_manager, device, sound_manager, audio
+from modules import frontend_loader, settings_manager, device, audio, keybind_manager
+from pynput import keyboard
 
 def main(page: ft.Page):
     # Window configuration
@@ -109,5 +110,9 @@ def main(page: ft.Page):
 
     # Initial refresh of the home view
     home.refresh_sounds_list(home_container, play_sound, change_page)
+    # Listen all keybinds
+    with keyboard.Listener(on_press=keybind_manager.on_press, on_release=keybind_manager.on_release) as listener:
+        listener.join()
+
 
 ft.app(target=main)

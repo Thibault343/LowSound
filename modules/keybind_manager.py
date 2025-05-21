@@ -1,9 +1,10 @@
 from pynput import keyboard
 import time
-from sound_manager import list_sounds
+from modules import audio, sound_manager
+from modules.frontend_loader import settings
 
 
-sounds = list_sounds()
+sounds = sound_manager.list_sounds()
 print(sounds)
 current_keys = set()
 last_combo = None
@@ -25,9 +26,11 @@ def load_keybinds():
 
 
 def pre_play_sound(combo):
+    global settings
     keybinds = load_keybinds()
     if combo in keybinds:
-        print(f"{combo} -> {keybinds[combo]['name']}")
+        audio.play_sound(keybinds[combo]['src'], settings['device'], keybinds[combo]['volume'])
+
 
 
 # Pour normaliser les noms de touches
@@ -50,6 +53,7 @@ current_keys = set()  # déplacé ici pour visibilité globale
 
 
 def on_press(key):
+    print("PRESSED")
     try:
         if hasattr(key, 'char') and key.char:
             k = key.char.lower()
@@ -75,14 +79,12 @@ def on_release(key):
             k = key.name.lower()
     except AttributeError:
         return
+    
+    if key == keyboard.Key.delete:
+        print("Exiting...")
+        return False
 
     normalized = normalize_key(k)
     current_keys.discard(normalized)
 
-    if key == keyboard.Key.esc:
-        print("Exiting...")
-        return False
 
-
-with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-    listener.join()

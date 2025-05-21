@@ -6,6 +6,8 @@ import json
 import flet as ft
 import os
 
+with open("data/settings.json", "r") as f:
+    settings = json.load(f)
 # ------------------------------------------------
 # Function: load_settings
 # Arguments: None
@@ -16,6 +18,7 @@ import os
 #   A dictionary with settings such as audio device and theme preferences.
 # ------------------------------------------------
 def load_settings():
+    global settings
     try:
         with open("data/settings.json", "r") as f:
                 settings = json.load(f)
