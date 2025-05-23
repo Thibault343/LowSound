@@ -1,6 +1,5 @@
 from pynput import keyboard
-import time
-from modules import audio, sound_manager
+from modules import sound_manager, audio
 from modules.frontend_loader import settings
 
 sounds = sound_manager.list_sounds()
@@ -78,7 +77,6 @@ current_keys = set()
 #   None
 # ------------------------------------------------
 def on_press(key):
-    print("PRESSED")
     try:
         if hasattr(key, 'char') and key.char:
             k = key.char.lower()
@@ -119,3 +117,5 @@ def on_release(key):
 
     normalized = normalize_key(k)
     current_keys.discard(normalized)
+
+

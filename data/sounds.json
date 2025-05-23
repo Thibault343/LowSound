@@ -3,7 +3,7 @@
         "name": "Hello",
         "src": "storage/sounds/Hello.mp3",
         "img": "storage/images/Hello.png",
-        "volume": 81.0,
+        "volume": 18.0,
         "keybind": "Alt + Shift + A"
     },
     {
@@ -18,6 +18,6 @@
         "src": "storage/sounds/asda.mp3",
         "img": "assets/icon2.png",
         "volume": 50,
-        "keybind": "Alt + Shift + Q"
+        "keybind": "Ctrl + Alt + D"
     }
 ]

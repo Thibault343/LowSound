@@ -23,11 +23,18 @@ One external app:
 
 ### Requirements
 
+#### Applications
+
 -   [Python](https://www.python.org/downloads/) version : 3.13
+-   [VB CABLE](https://vb-audio.com/Cable/)
+
+#### Libraries
+
 -   [Flet](https://flet.dev/) version : 0.27.6
 -   [Sounddevice](https://pypi.org/project/sounddevice/) version : 0.5.1
--   [Soundfile](https://pypi.org/project/soundfile/) versions : 0.13.1
--   [VB CABLE](https://vb-audio.com/Cable/)
+-   [Soundfile](https://pypi.org/project/soundfile/) version : 0.13.1
+-   [Psutil](https://pypi.org/project/psutil/) version : 7.0.0
+-   [Keyboard](https://pypi.org/project/keyboard/) version : 0.13.5
 
 ### Download the project
 
@@ -37,7 +44,7 @@ zip: [download](https://github.com/Thibault343/LowSound/archive/refs/heads/main.
 ### Installing packages
 
 ```python
-pip install "flet==0.27.6" "sounddevice==0.5.1" "soundfile==0.13.1"
+pip install -r requirements.txt
 ```
 
 ### Install VB CABLE
