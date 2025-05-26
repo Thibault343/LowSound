@@ -1,6 +1,9 @@
 import sounddevice as sd
 import soundfile as sf
+import time
 
+last_time_played = 0
+cooldown = 4
 # ------------------------------------------------
 # Function: play_sound
 # Arguments:
@@ -16,16 +19,25 @@ import soundfile as sf
 #   - Catches and prints errors if playback fails or if the device is not found.
 # ------------------------------------------------
 def play_sound(sound, selected_device, volume):
-    volume = volume / 100.0
-    device_info = next((d for d in sd.query_devices() if d['name'] == selected_device), None)
-    if device_info:
+    global last_time_played
+    time_know = time.time() #Get the actual time
+    stop_play()
+    if (time_know - last_time_played) > cooldown:
         try:
-            data, samplerate = sf.read(sound)
-            sd.play(data * volume, samplerate=samplerate, device=device_info['name'])
-        except Exception as e:
-            print(f"Error playing sound: {e}")
-    else:
-        print("Selected device not found.")
+            print(f"| Sound Played |")
+            last_time_played = time_know
+            volume = volume / 100.0
+            device_info = next((d for d in sd.query_devices() if d['name'] == selected_device), None)
+            if device_info:
+                try:
+                    data, samplerate = sf.read(sound)
+                    sd.play(data * volume, samplerate=samplerate, device=device_info['name'])
+                except Exception as e:
+                    print(f"Error playing sound: {e}")
+            else:
+                print("Selected device not found.")
+        except:
+            print("Sound can't be played")
 
 # ------------------------------------------------
 # Function: stop_play

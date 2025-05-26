@@ -91,7 +91,7 @@ def on_press(key):
     combo = " + ".join(sorted(current_keys))
     if combo in keybind_map:
         pre_play_sound(combo)
-        print(f"✅ Shortcut matched: {combo}")
+
 
 # ------------------------------------------------
 # Function: on_release
